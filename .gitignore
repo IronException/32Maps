@@ -1,0 +1,21 @@
+.DS_Store
+**/*.swp
+
+run/
+autotest/
+dist/
+
+# Gradle
+build/
+.gradle/
+classes/
+*.class
+
+# IntelliJ Files
+.idea/
+*.iml
+/logs/
+
+# Copyright Files
+!/.idea/copyright/Baritone.xml
+!/.idea/copyright/profiles_settings.xml
