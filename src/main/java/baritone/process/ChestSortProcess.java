@@ -88,7 +88,6 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     @Override
     public void activate() {
         this.active = true;
-        chestVisitor = new GetMapVisitor(this);
     }
 
 
@@ -96,6 +95,15 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         // test wether maps in inv
+
+BlockPos nextPos = getNextPos();
+
+        if(this.chestVisitor == null)
+// find out wether we have any maps (i know this is very irritating
+          if(nextPos.equals(targetPos))
+this.chestVisitor = new GetMapVisitor(this);
+else
+this.chestVisitor = new DumpMap(this);
 
         if (isChestOpen(ctx)) {
             if (!this.chestVisitor.containerOpenTick((Container) ctx.player().openContainer)) {
@@ -106,8 +114,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         // after getting the maps
         // we need to calculate new goal
 
-        BlockPos nextPos = getNextPos();
-
+        
         Goal goal = new GoalNear(nextPos, 2);
 
         Optional<Rotation> newRotation = RotationUtils.reachable(ctx, targetPos); //getRotationForChest(target); // may be aiming at different chest than targetPos but thats fine
