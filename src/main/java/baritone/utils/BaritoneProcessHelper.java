@@ -25,7 +25,7 @@ import baritone.api.utils.IPlayerContext;
 public abstract class BaritoneProcessHelper implements IBaritoneProcess, Helper {
 
     protected final Baritone baritone;
-    protected final IPlayerContext ctx;
+    public final IPlayerContext ctx;
 
     public BaritoneProcessHelper(Baritone baritone) {
         this.baritone = baritone;

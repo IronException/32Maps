@@ -19,36 +19,38 @@ package baritone.process.chest.sorter;
 
 import baritone.api.utils.IPlayerContext;
 import baritone.process.ChestSortProcess;
-import com.google.common.collect.*;
 import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.ContainerShulkerBox;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Tuple;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
-
 public class GetMapVisitor extends ChestSortProcess.ChestVisitor {
 
     // temp impl
-    private int workingSlot = 0;
+    private int workingSlot;
 
     @Nullable
-    private ContainerChest openContainer; // not used for functionality
+    private Container openContainer; // not used for functionality
 
 
 
 
     public GetMapVisitor(ChestSortProcess parent){//, Set<ChestSortProcess.UniqueChest> toSort, Map<ChestSortProcess.UniqueChest, List<ItemStack>> chestData) {
         super(parent);
+
+        this.workingSlot = 0;
        // this.chestsToSort = ImmutableSet.copyOf(toSort);
         //this.chestData = chestData;
         //this.howToSort = ImmutableBiMap.copyOf(howToSortChests(chestData));
+        /*
+        /*
         this.currentlyMoving = nextTarget(this.howToSort, Collections.emptySet()).map(pair -> new Tuple<>(pair, ChestSortProcess.SortingChestVisitor.SortState.FETCHING)).orElse(null);
-        super.currentTarget = currentlyMoving != null ? currentlyMoving.getFirst().from.chest : null;
+        super.currentTarget = currentlyMoving != null ? currentlyMoving.getFirst().from.chest : null;*/
     }
 
 
@@ -59,11 +61,11 @@ public class GetMapVisitor extends ChestSortProcess.ChestVisitor {
 
     public boolean finished() { // TODO don't create new hashsets from the values
         //return Sets.difference(Sets.newHashSet(howToSort.values()), sortedSlots).isEmpty();
-        return false; // TODO
+        return workingSlot > 26; // TODO
     }
 
     @Override
-    public boolean onContainerOpened(ContainerChest container, List<ItemStack> itemStacks) {
+    public boolean onContainerOpened(Container container, List<ItemStack> itemStacks) {
         this.openContainer = container;
         return true;
     }
@@ -73,24 +75,54 @@ public class GetMapVisitor extends ChestSortProcess.ChestVisitor {
     }
 
 
+
     @Override
-    public boolean containerOpenTick(ContainerChest container) {
+    public boolean containerOpenTick(Container container) {
+        if(workingSlot > 26){
+            openContainer = null;
+            return false;
+        }
+
         //if (this.openContainer == null) throw new IllegalStateException();
 
                 // from chest to inv
-                pickupClick(currentlyMoving.getFirst().from.slot, parent.ctx);
+                /*pickupClick(currentlyMoving.getFirst().from.slot, parent.ctx);
                 pickupClick(getInvSlotIndex(WORKING_SLOT, container), parent.ctx);
 
                 this.currentlyMoving = new Tuple<>(this.currentlyMoving.getFirst(), ChestSortProcess.SortingChestVisitor.SortState.MOVING); // change the state
                 this.currentTarget = this.currentlyMoving.getFirst().to.chest;
+*/
 
                 //this.openContainer = null; // close chest
-                return false;
+                //return false;
+        pickupClick(workingSlot, parent.ctx);
+        pickupClick(getInvSlotIndex(workingSlot, container), parent.ctx);
+
+        // put the item back that could be in you hand now (player inv might not be empty)
+        pickupClick(workingSlot, parent.ctx);
+
+
+        workingSlot ++;
+
+
+
+        return true;
 
     }
 
-    private static int getInvSlotIndex(int slot, ContainerChest chest) {
-        return chest.getLowerChestInventory().getSizeInventory() + slot;
+    @Override
+    public ChestSortProcess.ChestVisitor getNextVisitor(){
+        return new GetMapVisitor(parent);
+    }
+
+    private static int getInvSlotIndex(int slot, Container chest) {
+
+        if (chest instanceof ContainerChest)
+            return ((ContainerChest) chest).getLowerChestInventory().getSizeInventory() + slot;
+
+        if (chest instanceof ContainerShulkerBox)
+            return 27 + slot;
+        return slot;
     }
 
     private static ItemStack pickupClick(int slotId, IPlayerContext ctx) {

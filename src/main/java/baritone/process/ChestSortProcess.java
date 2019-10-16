@@ -40,6 +40,8 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.ContainerShulkerBox;
+import net.minecraft.item.ItemMap;
+import net.minecraft.item.ItemMapBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SPacketCloseWindow;
 import net.minecraft.network.play.server.SPacketWindowItems;
@@ -66,12 +68,8 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
     private boolean active = false;
 
-    private Phase phase;
-    // only one of these can be non null at a time
-    // tfw no sum types
-    private ScanningChestVisitor scanner;
-    private SortingChestVisitor sorter;
 
+    ChestVisitor chestVisitor;
 
     public ChestSortProcess(Baritone baritone) {
         super(baritone);
@@ -90,7 +88,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     @Override
     public void activate() {
         this.active = true;
-        GetMapVisitor.getScanner();
+        chestVisitor = new GetMapVisitor(this);
     }
 
 
@@ -100,12 +98,17 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         // test wether maps in inv
 
         if (isChestOpen(ctx)) {
-            if (!this.sorter.containerOpenTick((ContainerChest) ctx.player().openContainer)) {
+            if (!this.chestVisitor.containerOpenTick((Container) ctx.player().openContainer)) {
                 ctx.player().closeScreenAndDropStack();
             }
         }
 
-        Goal goal = new GoalNear(targetPos, 2);
+        // after getting the maps
+        // we need to calculate new goal
+
+        BlockPos nextPos = getNextPos();
+
+        Goal goal = new GoalNear(nextPos, 2);
 
         Optional<Rotation> newRotation = RotationUtils.reachable(ctx, targetPos); //getRotationForChest(target); // may be aiming at different chest than targetPos but thats fine
         newRotation.ifPresent(rotation -> {
@@ -120,59 +123,28 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         return new PathingCommand(goal, PathingCommandType.REVALIDATE_GOAL_AND_PATH);
     }
 
+    private BlockPos getNextPos() {
 
-    public PathingCommand onOtherFakeTick(boolean calcFailed, boolean isSafeToCancel) {
-        // test wether maps in inv
-
-        if (scanner == null && sorter == null) { // uninitialized
-            this.scanWorld(this.ctx.world());
+        for (int i = 0; i < ctx.player().inventoryContainer.inventorySlots.size(); i++) {
+            if (ctx.player().inventoryContainer.getSlot(i).getStack().getItem() instanceof ItemMap)
+                return calculateCoords(ctx.player().inventoryContainer.getSlot(i).getStack().getMetadata());
         }
 
-        if (isChestOpen(ctx)) {
-            if (!this.getVisitor().containerOpenTick((ContainerChest)ctx.player().openContainer)) {
-                ctx.player().closeScreenAndDropStack();
-            }
-        }
 
-        while (this.getVisitor().finished()) {
-            if (this.getVisitor() == this.scanner) {
-                this.setSorting(SortingChestVisitor.fromScanner(this, this.scanner));
-            } else {
-                this.onLostControl(); // sorter has finished
-                return null;
-            }
-        }
-
-        final ChestVisitor visitor = getVisitor();
-
-        UniqueChest target = new UniqueChest(new TileEntityChest());
-        //final UniqueChest target = visitor.getCurrentTarget().get();
-        //final BlockPos targetPos = //target.closestChest(ctx).getPos();
-
-        // important code
-        Goal goal = new GoalNear(targetPos, 2);
-
-        Optional<Rotation> newRotation = getRotationForChest(target); // may be aiming at different chest than targetPos but thats fine
-        newRotation.ifPresent(rotation -> {
-            baritone.getLookBehavior().updateTarget(rotation, true);
-        });
-        final RayTraceResult trace = ctx.objectMouseOver();
-        if (!(isChestOpen(ctx)) && target.getAllChests().stream().anyMatch(chest -> ctx.isLookingAt(chest.getPos()))) {
-            ctx.playerController().processRightClickBlock(ctx.player(), ctx.world(), targetPos, trace.sideHit, trace.hitVec, EnumHand.OFF_HAND);
-        }
-
-        return new PathingCommand(goal, PathingCommandType.REVALIDATE_GOAL_AND_PATH);
+        return targetPos;
     }
+
+    private BlockPos calculateCoords(int id) {
+        return targetPos.add(0, 0, id);
+    }
+
 
     @Override
     public void onLostControl() {
         this.active = false;
 
         // reset the state
-        // if onLostControl is called we assume that the state of the chests have changed and we should start from scratch
-        this.phase = null;
-        this.scanner = null;
-        this.sorter = null;
+        chestVisitor = null;
     }
 
     @Override
@@ -180,34 +152,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         return "ChestSortProcess";
     }
 
-    private void setScanning(ScanningChestVisitor scanner) {
-        this.phase = Phase.SCANNING;
-        this.scanner = scanner;
-        this.sorter = null;
-    }
-    private void setSorting(SortingChestVisitor sorter) {
-        this.phase = Phase.SORTING;
-        this.sorter = sorter;
-        this.scanner = null;
-    }
 
-    private ChestVisitor getVisitor() {
-        switch (this.phase) {
-            case SCANNING: return Objects.requireNonNull(this.scanner);
-            case SORTING:  return Objects.requireNonNull(this.sorter);
-
-            default: throw new IllegalStateException();
-        }
-    }
-
-    private void scanWorld(World world) {
-        List<TileEntityChest> allChests = world.loadedTileEntityList
-            .stream()
-            .filter(TileEntityChest.class::isInstance).map(TileEntityChest.class::cast)
-            .collect(Collectors.toList());
-
-        this.setScanning(new ScanningChestVisitor(this, getUniqueChests(allChests)));
-    }
 
     private static boolean isChestOpen(IPlayerContext ctx) {
         return ctx.player().openContainer instanceof ContainerChest || ctx.player().openContainer instanceof ContainerShulkerBox;
@@ -312,6 +257,8 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
             this.parent = parent;
         }
 
+        public abstract ChestVisitor getNextVisitor();
+
         public final Optional<UniqueChest> getCurrentTarget() {
             return Optional.ofNullable(this.currentTarget);
         }
@@ -320,7 +267,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         public abstract boolean finished();
 
         // return true if this visitor must do more work
-        public abstract boolean onContainerOpened(ContainerChest container, List<ItemStack> itemStacks);
+        public abstract boolean onContainerOpened(Container container, List<ItemStack> itemStacks);
 
         // Called when SPacketCloseWindow is received.
         // This may happen unexpectedly while the visitor is doing stuff and this visitor may want to call onLostControl in that case
@@ -328,266 +275,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         // do some work while the container is open
         // return true if the container should stay open
-        public abstract boolean containerOpenTick(ContainerChest container);
-    }
-
-    private static class ScanningChestVisitor extends ChestVisitor {
-        private final ImmutableSet<UniqueChest> scannedChests;
-        private final Set<UniqueChest> visitedChests = new HashSet<>(); // visited chest = chest we have opened and received items for. can probably just use chestData keys
-        private final Map<UniqueChest, List<ItemStack>> chestData = new HashMap<>();
-
-
-        ScanningChestVisitor(ChestSortProcess parent, Set<UniqueChest> chests) {
-            super(parent);
-            this.scannedChests = ImmutableSet.copyOf(chests);
-            super.currentTarget = nextTarget().orElse(null);
-        }
-
-        public boolean finished() {
-            return Sets.difference(scannedChests, visitedChests).isEmpty();
-        }
-
-        @Override
-        public boolean onContainerOpened(ContainerChest container, List<ItemStack> itemStacks) {
-            Objects.requireNonNull(currentTarget, "null currentTarget");
-            this.chestData.put(this.currentTarget, itemStacks);
-            this.visitedChests.add(this.currentTarget);
-            this.currentTarget = nextTarget().orElse(null);
-
-            return false;
-        }
-
-        @Override
-        public boolean containerOpenTick(ContainerChest container) {
-            // we want to wait until we receive the items
-            return !this.visitedChests.contains(this.currentTarget);
-        }
-
-        private Optional<UniqueChest> nextTarget() {
-            Set<UniqueChest> remaining = Sets.difference(this.scannedChests, this.visitedChests);
-            return remaining.stream()
-                .min(closestChestToPlayer(parent.ctx.player()));
-        }
-
-    }
-
-
-    private static class SortingChestVisitor extends ChestVisitor {
-        private final ImmutableSet<UniqueChest> chestsToSort;
-        private final Map<UniqueChest, List<ItemStack>> chestData; // this should be kept updated
-
-
-        private final BiMap<StackLocation, StackLocation> howToSort; // immutable
-        private final Set<StackLocation> sortedSlots = new HashSet<>();
-
-        // temp impl
-        private static final int WORKING_SLOT = 0;
-
-        private Tuple<StackLocationPair, SortState> currentlyMoving;
-
-        @Nullable
-        private ContainerChest openContainer; // not used for functionality
-
-
-        public static SortingChestVisitor fromScanner(ChestSortProcess parent, ScanningChestVisitor scanner) {
-            return new SortingChestVisitor(parent, scanner.visitedChests, scanner.chestData);
-        }
-
-        public SortingChestVisitor(ChestSortProcess parent, Set<UniqueChest> toSort, Map<UniqueChest, List<ItemStack>> chestData) {
-            super(parent);
-            this.chestsToSort = ImmutableSet.copyOf(toSort);
-            this.chestData = chestData;
-            this.howToSort = ImmutableBiMap.copyOf(howToSortChests(chestData));
-            this.currentlyMoving = nextTarget(this.howToSort, Collections.emptySet()).map(pair -> new Tuple<>(pair, SortState.FETCHING)).orElse(null);
-            super.currentTarget = currentlyMoving != null ? currentlyMoving.getFirst().from.chest : null;
-        }
-
-
-        private enum SortState {
-            FETCHING,
-            MOVING
-        }
-
-        public boolean finished() { // TODO don't create new hashsets from the values
-            return Sets.difference(Sets.newHashSet(howToSort.values()), sortedSlots).isEmpty();
-        }
-
-        @Override
-        public boolean onContainerOpened(ContainerChest container, List<ItemStack> itemStacks) {
-            this.openContainer = container;
-            return true;
-        }
-
-        @Override
-        public void onContainerClosed(int windowId) {
-            /*if (this.openContainer != null && this.openContainer.windowId == windowId) {
-                parent.logDirect("onLostControl");
-                // commented out because seems to sometimes happen when everything is fine
-                //this.parent.onLostControl(); // container closed while we were using it :^(
-            }*/
-        }
-
-
-        @Override
-        public boolean containerOpenTick(ContainerChest container) {
-            //if (this.openContainer == null) throw new IllegalStateException();
-
-            switch(currentlyMoving.getSecond()) {
-                case FETCHING: {
-                    // from chest to inv
-                    pickupClick(currentlyMoving.getFirst().from.slot, parent.ctx);
-                    pickupClick(getInvSlotIndex(WORKING_SLOT, container), parent.ctx);
-
-                    this.currentlyMoving = new Tuple<>(this.currentlyMoving.getFirst(), SortState.MOVING); // change the state
-                    this.currentTarget = this.currentlyMoving.getFirst().to.chest;
-
-                    //this.openContainer = null; // close chest
-                    return false;
-                }
-                //break;
-                case MOVING: {
-                    // from inv to chest
-                    pickupClick(getInvSlotIndex(WORKING_SLOT, container), parent.ctx);
-                    pickupClick(currentlyMoving.getFirst().to.slot, parent.ctx);
-
-                    this.sortedSlots.add(this.currentlyMoving.getFirst().to);
-
-                    this.currentlyMoving = nextTarget(this.howToSort, this.sortedSlots).map(entry -> new Tuple<>(entry, SortState.FETCHING)).orElse(null);
-                    this.currentTarget = this.currentlyMoving != null ? this.currentlyMoving.getFirst().from.chest : null;
-
-                    //this.openContainer = null; // close chest
-                    return false;
-                }
-                //break;
-
-                default: throw new IllegalStateException("enum??");
-            }
-        }
-
-
-        private static Optional<StackLocationPair> nextTarget(BiMap<StackLocation, StackLocation> howToSort, Set<StackLocation> sortedLocations) {
-            return howToSort.entrySet().stream()
-                .filter(entry  -> !sortedLocations.contains(entry.getValue()))
-                .map(entry -> new StackLocationPair(entry.getKey(), entry.getValue()))
-                .findAny();
-        }
-
-        private static int getInvSlotIndex(int slot, ContainerChest chest) {
-            return chest.getLowerChestInventory().getSizeInventory() + slot;
-        }
-
-        private static ItemStack pickupClick(int slotId, IPlayerContext ctx) {
-            return ctx.playerController().windowClick(ctx.player().openContainer.windowId, slotId, 0, ClickType.PICKUP, ctx.player());
-        }
-
-        // given all the chest data, return a map that says where to move chest slots to
-        // number = slot slot
-        private static BiMap<StackLocation, StackLocation> howToSortChests(final Map<UniqueChest, List<ItemStack>> chestData) {
-            final List<List<ItemStack>> sortedChestList = sortChestData(chestData.values()); // paritioned into groups of no more than size of double chest (need to allow single chests later)
-            final Set<UniqueChest> chests = Collections.unmodifiableSet(chestData.keySet());
-            if (sortedChestList.size() > chests.size()) throw new IllegalStateException(sortedChestList.size() + " - " + chests.size());
-
-            final List<Tuple<UniqueChest, List<ItemStack>>> pairs =
-                combine(
-                    sortedChestList.iterator(), chests.iterator(),
-                    (stack, chest) -> new Tuple<>(chest, stack)
-                ); // TODO: don't choose random chests
-
-            final Map<UniqueChest, List<ItemStack>> sortedChestState = pairs.stream() // how we want the state of the chests to be
-                .collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
-
-            return conversion(chestData, sortedChestState);
-        }
-
-
-        private static BiMap<StackLocation, StackLocation> conversion(Map<UniqueChest, List<ItemStack>> unsorted, Map<UniqueChest, List<ItemStack>> sorted) {
-            // set of slots that some stack has been decided to be moved to
-            final Set<StackLocation> reservedSlots = new HashSet<>();
-            final BiMap<StackLocation, StackLocation> out = HashBiMap.create();
-
-            unsorted.forEach((chestA, stacksFrom) -> {
-                for (int i = 0; i < stacksFrom.size(); i++) {
-                    final int indexFrom = i; // dumb final meme
-
-                    final ItemStack stack = stacksFrom.get(indexFrom);
-                    if (stack.isEmpty()) continue;
-
-                    sorted.forEach((chestB, stacksTo) -> {
-                        indexMatching(stacksTo, (stackSorted, idx) -> !reservedSlots.contains(new StackLocation(chestB, idx)) && ItemStack.areItemStacksEqual(stack, stackSorted))
-                            .ifPresent(indexTo -> {
-                                final StackLocation from = new StackLocation(chestA, indexFrom);
-                                final StackLocation to = new StackLocation(chestB, indexTo);
-
-                                reservedSlots.add(to);
-                                out.put(from, to);
-                            });
-                    });
-                }
-            });
-
-            return out;
-        }
-
-        private static <T> OptionalInt indexMatching(List<T> list, BiPredicate<T, Integer> predicate) {
-            for (int i = 0; i < list.size(); i++) {
-                if (predicate.test(list.get(i), i)) return OptionalInt.of(i);
-            }
-            return OptionalInt.empty();
-        }
-
-        /*private static <T> Stream<Tuple<T, Integer>> streamWithIndex(List<T> list) {
-
-        }*/
-
-        // combine 2 iterators into list of pairs
-        // second argument must at least have the same number of elements as the first argument
-        // any extra elements from the second iterator are unused
-        private static <T extends Tuple<?, ?>, A, B> List<T> combine(Iterator<A> iterA, Iterator<B> iterB, BiFunction<A, B, T> toPairFn) {
-            final List<T> out = new ArrayList<>();
-
-            while(iterA.hasNext()) {
-                if (!iterB.hasNext()) throw new IllegalArgumentException("second argument must not have less elements than the first argument");
-                out.add(toPairFn.apply(iterA.next(), iterB.next()));
-            }
-
-            return out;
-        }
-
-        // TODO: dont partition here
-        private static List<List<ItemStack>> sortChestData(Collection<List<ItemStack>> values) {
-            List<ItemStack> sorted = values.stream()
-                .flatMap(List::stream)
-                .sorted(ItemSorter::compare)
-                .collect(Collectors.toList());
-            System.out.println(sorted);
-            final int CHEST_SIZE = 9 * 6; // TODO: dont assume double chests
-
-            return Lists.partition(sorted, CHEST_SIZE); // guava is based
-        }
-
-        private static final class StackLocationPair {
-            public final StackLocation from;
-            public final StackLocation to;
-
-            StackLocationPair(StackLocation from, StackLocation to) {
-                this.from = from;
-                this.to = to;
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (o == null || getClass() != o.getClass()) return false;
-                StackLocationPair that = (StackLocationPair) o;
-                return from.equals(that.from) &&
-                    to.equals(that.to);
-            }
-
-            @Override
-            public int hashCode() {
-                return Objects.hash(from, to);
-            }
-        }
+        public abstract boolean containerOpenTick(Container container);
     }
 
 
@@ -606,7 +294,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
                     // we just got the items for the chest we have open
                     // the server sends our inventory with the chest inventory but we only care about chest inventory so only use the first 27/54 slots
                     final List<ItemStack> chestItems = packet.getItemStacks().subList(0, containerChest.getLowerChestInventory().getSizeInventory());
-                    final boolean stayOpen = this.getVisitor().onContainerOpened((ContainerChest)openContainer, chestItems);
+                    final boolean stayOpen = this.chestVisitor.onContainerOpened((ContainerChest)openContainer, chestItems);
                     if (!stayOpen/*this.getVisitor().wantsContainerOpen()*/) {
                         ctx.player().closeScreenAndDropStack();
                     }
@@ -618,7 +306,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
             final Field idField = SPacketCloseWindow.class.getDeclaredFields()[0]; // lol
             idField.setAccessible(true);
             try {
-                this.getVisitor().onContainerClosed((Integer) idField.get(event.getPacket()));
+                this.chestVisitor.onContainerClosed((Integer) idField.get(event.getPacket()));
             } catch (ReflectiveOperationException ex) {
                 System.out.println("oyyy vey " + ex.toString());
                 throw new RuntimeException(ex);
