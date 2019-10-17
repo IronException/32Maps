@@ -42,6 +42,16 @@ public class PutMapVisitor extends ChestSortProcess.ChestVisitor {
 
     private int phase;
 
+/*
+phases:
+0: goto chest + get shulker
+1: place shulker where it belongs
+2: get map in
+3: break shulker
+4: put shulker back
+5: next PutMapVisitor
+
+*/
 
     public static PutMapVisitor getPutMapVisitor(ChestSortProcess parent){
         IPlayerContext ctx = parent.ctx;
