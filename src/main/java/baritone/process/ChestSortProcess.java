@@ -29,35 +29,30 @@ import baritone.api.process.PathingCommandType;
 import baritone.api.utils.IPlayerContext;
 import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
-import baritone.process.chest.sorter.GetMapVisitor;
-import baritone.process.chest.sorter.PutMapVisitor;
+import baritone.process.chest.sorter.*;
+import baritone.process.sub.processes.EditChestShulkerProcess;
+import baritone.process.sub.processes.Epsilon;
+import baritone.process.sub.processes.GoalNearProcess;
+import baritone.process.sub.processes.SubProcess;
 import baritone.utils.BaritoneProcessHelper;
 import baritone.utils.chestsorter.Categories;
 import baritone.utils.chestsorter.Category;
-import com.google.common.collect.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.ContainerShulkerBox;
-import net.minecraft.item.ItemMap;
-import net.minecraft.item.ItemMapBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SPacketCloseWindow;
 import net.minecraft.network.play.server.SPacketWindowItems;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 public final class ChestSortProcess extends BaritoneProcessHelper implements IChestSortProcess, AbstractGameEventListener {
@@ -76,16 +71,30 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     private boolean active = false;
 
 
+    public static ChestSortProcess INSTANCE;
+
     ChestVisitor chestVisitor;
+
+    SubProcess process;
 
     public ChestSortProcess(Baritone baritone) {
         super(baritone);
+        ChestSortProcess.INSTANCE = this;
+
+
+    }
+
+
+    public SubProcess getProcessBuild(){
+        return new GoalNearProcess(targetPos, 2,
+                new EditChestShulkerProcess(new Epsilon())
+        );
     }
 
 
     @Override
     public boolean isActive() {
-        return this.active;
+        return this.process.finished() && this.active;
     }
 
     @Override
@@ -99,9 +108,18 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         // test wether maps in inv
 
+        if(this.process == null || this.process.finished())
+            this.process = getProcessBuild();
+
+
+        this.process.superTick();
+
+
+
+
+/*
         if(this.chestVisitor == null)
             this.chestVisitor = new GetMapVisitor(this, targetPos);
-
 
         if (isChestOpen(ctx)) {
             if (!this.chestVisitor.containerOpenTick((Container) ctx.player().openContainer) || this.chestVisitor.finished()) {
@@ -109,11 +127,6 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
                 ctx.player().closeScreenAndDropStack();
             }
         }
-
-
-
-
-
 
         if(this.chestVisitor.finished())
             this.chestVisitor = chestVisitor.getNextVisitor();
@@ -141,7 +154,15 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         }
 
         logDirect(chestVisitor + " " + chestVisitor.getDebug());
-        return new PathingCommand(goal, PathingCommandType.REVALIDATE_GOAL_AND_PATH);
+
+*/
+
+
+
+
+
+
+        return process.getReturn();//new PathingCommand(goal, PathingCommandType.REVALIDATE_GOAL_AND_PATH);
     }
 
 
