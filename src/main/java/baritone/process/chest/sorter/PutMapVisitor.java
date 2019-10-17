@@ -64,8 +64,8 @@ phases:
     }
 
 
-    private static MapHome calculateCoords(int id) {
-        return new MapHome(ChestSortProcess.putMaps.add(ChestSortProcess.addX, 0, ChestSortProcess.addZ), 0, 0, id);
+    private static MapHome calculateCoords(int id) {// 27 * 27 = 729
+        return new MapHome(ChestSortProcess.putMaps.add(id * ChestSortProcess.addX / 729, 0, id * ChestSortProcess.addZ / 729), (id % 729) / 27, id % 27, id);
     }
 
 
