@@ -25,6 +25,7 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.ContainerShulkerBox;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -33,40 +34,26 @@ public class GetMapVisitor extends ChestSortProcess.ChestVisitor {
 
     // temp impl
     private int workingSlot;
-
-    @Nullable
-    private Container openContainer; // not used for functionality
+    private BlockPos targetPos;
 
 
 
 
-    public GetMapVisitor(ChestSortProcess parent){//, Set<ChestSortProcess.UniqueChest> toSort, Map<ChestSortProcess.UniqueChest, List<ItemStack>> chestData) {
+
+    public GetMapVisitor(ChestSortProcess parent, BlockPos targetPos){//, Set<ChestSortProcess.UniqueChest> toSort, Map<ChestSortProcess.UniqueChest, List<ItemStack>> chestData) {
         super(parent);
+        this.targetPos = targetPos;
 
         this.workingSlot = 0;
-       // this.chestsToSort = ImmutableSet.copyOf(toSort);
-        //this.chestData = chestData;
-        //this.howToSort = ImmutableBiMap.copyOf(howToSortChests(chestData));
-        /*
-        /*
-        this.currentlyMoving = nextTarget(this.howToSort, Collections.emptySet()).map(pair -> new Tuple<>(pair, ChestSortProcess.SortingChestVisitor.SortState.FETCHING)).orElse(null);
-        super.currentTarget = currentlyMoving != null ? currentlyMoving.getFirst().from.chest : null;*/
     }
 
 
-    private enum SortState {
-        FETCHING,
-        MOVING
-    }
-
-    public boolean finished() { // TODO don't create new hashsets from the values
-        //return Sets.difference(Sets.newHashSet(howToSort.values()), sortedSlots).isEmpty();
-        return workingSlot > 26; // TODO
+    public boolean finished() {
+        return workingSlot > 26;
     }
 
     @Override
-    public boolean onContainerOpened(Container container, List<ItemStack> itemStacks) {
-        this.openContainer = container;
+    public boolean onContainerOpened(Container container) {
         return true;
     }
 
@@ -78,23 +65,10 @@ public class GetMapVisitor extends ChestSortProcess.ChestVisitor {
 
     @Override
     public boolean containerOpenTick(Container container) {
-        if(workingSlot > 26){
-            openContainer = null;
+        if(finished()){
             return false;
         }
 
-        //if (this.openContainer == null) throw new IllegalStateException();
-
-                // from chest to inv
-                /*pickupClick(currentlyMoving.getFirst().from.slot, parent.ctx);
-                pickupClick(getInvSlotIndex(WORKING_SLOT, container), parent.ctx);
-
-                this.currentlyMoving = new Tuple<>(this.currentlyMoving.getFirst(), ChestSortProcess.SortingChestVisitor.SortState.MOVING); // change the state
-                this.currentTarget = this.currentlyMoving.getFirst().to.chest;
-*/
-
-                //this.openContainer = null; // close chest
-                //return false;
         pickupClick(workingSlot, parent.ctx);
         pickupClick(getInvSlotIndex(workingSlot, container), parent.ctx);
 
@@ -106,13 +80,18 @@ public class GetMapVisitor extends ChestSortProcess.ChestVisitor {
 
 
 
-        return true;
+        return !finished();
 
     }
 
     @Override
+    public BlockPos getGoalPos() {
+        return targetPos;
+    }
+
+    @Override
     public ChestSortProcess.ChestVisitor getNextVisitor(){
-        return new GetMapVisitor(parent);
+        return PutMapVisitor.getPutMapVisitor(parent);
     }
 
     private static int getInvSlotIndex(int slot, Container chest) {

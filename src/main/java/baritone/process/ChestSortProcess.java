@@ -30,6 +30,7 @@ import baritone.api.utils.IPlayerContext;
 import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
 import baritone.process.chest.sorter.GetMapVisitor;
+import baritone.process.chest.sorter.PutMapVisitor;
 import baritone.utils.BaritoneProcessHelper;
 import baritone.utils.chestsorter.Categories;
 import baritone.utils.chestsorter.Category;
@@ -62,7 +63,13 @@ import java.util.stream.Collectors;
 public final class ChestSortProcess extends BaritoneProcessHelper implements IChestSortProcess, AbstractGameEventListener {
     private static final PathingCommand NO_PATH = new PathingCommand(null, PathingCommandType.DEFER);
 
-    BlockPos targetPos = new BlockPos(0, 5, 0);
+    public static BlockPos targetPos = new BlockPos(0, 5, 0);
+    public static BlockPos putMaps = new BlockPos(5, 5, 0);
+    public static int addX = 0;
+    public static int addZ = 2;
+    public static int hotbarSlot = 5;
+
+    public static BlockPos shulkerPos = new BlockPos(-10, 4, 10);
 
 
 
@@ -75,10 +82,6 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         super(baritone);
     }
 
-    private enum Phase {
-        SCANNING,
-        SORTING
-    }
 
     @Override
     public boolean isActive() {
@@ -96,54 +99,51 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         // test wether maps in inv
 
-BlockPos nextPos = getNextPos();
-
         if(this.chestVisitor == null)
-// find out wether we have any maps (i know this is very irritating
-          if(nextPos.equals(targetPos))
-this.chestVisitor = new GetMapVisitor(this);
-else
-this.chestVisitor = new DumpMap(this);
+            this.chestVisitor = new GetMapVisitor(this, targetPos);
+
 
         if (isChestOpen(ctx)) {
-            if (!this.chestVisitor.containerOpenTick((Container) ctx.player().openContainer)) {
+            if (!this.chestVisitor.containerOpenTick((Container) ctx.player().openContainer) || this.chestVisitor.finished()) {
+                logDirect("FUCK YOU JUST LEAVE THE CONTAINER");
                 ctx.player().closeScreenAndDropStack();
             }
         }
+
+
+
+
+
+
+        if(this.chestVisitor.finished())
+            this.chestVisitor = chestVisitor.getNextVisitor();
+
 
         // after getting the maps
         // we need to calculate new goal
 
         
-        Goal goal = new GoalNear(nextPos, 2);
+        Goal goal = new GoalNear(chestVisitor.getGoalPos(), 2);
 
-        Optional<Rotation> newRotation = RotationUtils.reachable(ctx, targetPos); //getRotationForChest(target); // may be aiming at different chest than targetPos but thats fine
+
+        Optional<Rotation> newRotation = RotationUtils.reachable(ctx, chestVisitor.getGoalPos()); //getRotationForChest(target); // may be aiming at different chest than targetPos but thats fine
         newRotation.ifPresent(rotation -> {
             baritone.getLookBehavior().updateTarget(rotation, true);
         });
 
-        if (!(isChestOpen(ctx)) && ctx.isLookingAt(targetPos)) {
-            final RayTraceResult trace = ctx.objectMouseOver();
-            ctx.playerController().processRightClickBlock(ctx.player(), ctx.world(), targetPos, trace.sideHit, trace.hitVec, EnumHand.OFF_HAND);
+
+        if (!(isChestOpen(ctx)) && ctx.isLookingAt(chestVisitor.getGoalPos())) {
+            if (this.chestVisitor.openChest()) {
+                final RayTraceResult trace = ctx.objectMouseOver();
+                ctx.playerController().processRightClickBlock(ctx.player(), ctx.world(), chestVisitor.getGoalPos(), trace.sideHit, trace.hitVec, EnumHand.OFF_HAND);
+            } else if(this.chestVisitor instanceof PutMapVisitor)
+                ((PutMapVisitor) this.chestVisitor).tickExChest();
         }
 
+        logDirect(chestVisitor + " " + chestVisitor.getDebug());
         return new PathingCommand(goal, PathingCommandType.REVALIDATE_GOAL_AND_PATH);
     }
 
-    private BlockPos getNextPos() {
-
-        for (int i = 0; i < ctx.player().inventoryContainer.inventorySlots.size(); i++) {
-            if (ctx.player().inventoryContainer.getSlot(i).getStack().getItem() instanceof ItemMap)
-                return calculateCoords(ctx.player().inventoryContainer.getSlot(i).getStack().getMetadata());
-        }
-
-
-        return targetPos;
-    }
-
-    private BlockPos calculateCoords(int id) {
-        return targetPos.add(0, 0, id);
-    }
 
 
     @Override
@@ -260,6 +260,14 @@ this.chestVisitor = new DumpMap(this);
         @Nullable
         protected UniqueChest currentTarget;
 
+        public String getDebug(){
+            return "";
+        }
+
+        public boolean openChest(){
+            return true;
+        }
+
         protected ChestVisitor(ChestSortProcess parent) {
             this.parent = parent;
         }
@@ -274,7 +282,7 @@ this.chestVisitor = new DumpMap(this);
         public abstract boolean finished();
 
         // return true if this visitor must do more work
-        public abstract boolean onContainerOpened(Container container, List<ItemStack> itemStacks);
+        public abstract boolean onContainerOpened(Container container);
 
         // Called when SPacketCloseWindow is received.
         // This may happen unexpectedly while the visitor is doing stuff and this visitor may want to call onLostControl in that case
@@ -283,6 +291,8 @@ this.chestVisitor = new DumpMap(this);
         // do some work while the container is open
         // return true if the container should stay open
         public abstract boolean containerOpenTick(Container container);
+
+        public abstract BlockPos getGoalPos();
     }
 
 
@@ -297,11 +307,11 @@ this.chestVisitor = new DumpMap(this);
             Minecraft.getMinecraft().addScheduledTask(() -> { // cant be on netty thread
                 final Container openContainer = ctx.player().openContainer;
                 if (isChestOpen(ctx) && openContainer.windowId == packet.getWindowId()) {
-                    ContainerChest containerChest = (ContainerChest)openContainer;
+                    Container containerChest = (Container)openContainer;
                     // we just got the items for the chest we have open
                     // the server sends our inventory with the chest inventory but we only care about chest inventory so only use the first 27/54 slots
-                    final List<ItemStack> chestItems = packet.getItemStacks().subList(0, containerChest.getLowerChestInventory().getSizeInventory());
-                    final boolean stayOpen = this.chestVisitor.onContainerOpened((ContainerChest)openContainer, chestItems);
+                   ///final List<ItemStack> chestItems = packet.getItemStacks().subList(0, containerChest.getLowerChestInventory().getSizeInventory());
+                    final boolean stayOpen = this.chestVisitor.onContainerOpened((Container) openContainer);
                     if (!stayOpen/*this.getVisitor().wantsContainerOpen()*/) {
                         ctx.player().closeScreenAndDropStack();
                     }

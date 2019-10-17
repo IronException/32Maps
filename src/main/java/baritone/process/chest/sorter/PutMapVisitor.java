@@ -18,13 +18,16 @@
 package baritone.process.chest.sorter;
 
 import baritone.api.utils.IPlayerContext;
+import baritone.api.utils.input.Input;
 import baritone.process.ChestSortProcess;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.ContainerShulkerBox;
+import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -34,42 +37,68 @@ import java.util.function.BiFunction;
 
 public class PutMapVisitor extends ChestSortProcess.ChestVisitor {
 
-    // temp impl
     private int workingSlot;
+    private MapHome mapHome;
 
-    @Nullable
-    private Container openContainer; // not used for functionality
-
-
+    private int phase;
 
 
-    public PutMapVisitor(ChestSortProcess parent){//, Set<ChestSortProcess.UniqueChest> toSort, Map<ChestSortProcess.UniqueChest, List<ItemStack>> chestData) {
+    public static PutMapVisitor getPutMapVisitor(ChestSortProcess parent){
+        IPlayerContext ctx = parent.ctx;
+
+        for (int i = 0; i < ctx.player().inventoryContainer.inventorySlots.size(); i ++) {
+            if (ctx.player().inventoryContainer.getSlot(i).getStack().getItem() instanceof ItemMap)
+                return new PutMapVisitor(parent, calculateCoords(ctx.player().inventoryContainer.getSlot(i).getStack().getMetadata()), i);
+        }
+        return null;
+    }
+
+
+    private static MapHome calculateCoords(int id) {
+        return new MapHome(ChestSortProcess.putMaps.add(ChestSortProcess.addX, 0, ChestSortProcess.addZ), 0, 0, id);
+    }
+
+
+
+    public PutMapVisitor(ChestSortProcess parent, MapHome mapHome, int workingSlot){//, Set<ChestSortProcess.UniqueChest> toSort, Map<ChestSortProcess.UniqueChest, List<ItemStack>> chestData) {
         super(parent);
+        this.phase = 0;
 
-        this.workingSlot = 0;
-       // this.chestsToSort = ImmutableSet.copyOf(toSort);
-        //this.chestData = chestData;
-        //this.howToSort = ImmutableBiMap.copyOf(howToSortChests(chestData));
-        /*
-        /*
-        this.currentlyMoving = nextTarget(this.howToSort, Collections.emptySet()).map(pair -> new Tuple<>(pair, ChestSortProcess.SortingChestVisitor.SortState.FETCHING)).orElse(null);
-        super.currentTarget = currentlyMoving != null ? currentlyMoving.getFirst().from.chest : null;*/
+        this.workingSlot = workingSlot;
+        this.mapHome = mapHome;
     }
 
 
-    private enum SortState {
-        FETCHING,
-        MOVING
-    }
-
-    public boolean finished() { // TODO don't create new hashsets from the values
-        //return Sets.difference(Sets.newHashSet(howToSort.values()), sortedSlots).isEmpty();
-        return workingSlot > 26; // TODO
+    public boolean finished() {
+        return false; // TODO
     }
 
     @Override
-    public boolean onContainerOpened(Container container, List<ItemStack> itemStacks) {
-        this.openContainer = container;
+    public boolean openChest() {
+        switch(this.phase){
+            case 0:
+                return true;
+            case 1:
+                return false;
+
+        }
+        return true;
+    }
+
+    public void tickExChest() {
+// TODO
+        // place shulker and then open it
+        parent.baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_RIGHT, true);
+        parent.logDirect("SOMEHOW NOT BILDIN");
+        phase = 2;
+    }
+
+    public String getDebug(){
+        return phase + "";
+    }
+
+    @Override
+    public boolean onContainerOpened(Container container) {
         return true;
     }
 
@@ -81,41 +110,46 @@ public class PutMapVisitor extends ChestSortProcess.ChestVisitor {
 
     @Override
     public boolean containerOpenTick(Container container) {
-        if(workingSlot > 26){
-            openContainer = null;
-            return false;
+        switch(this.phase) {
+            case 0:
+                pickupClick(this.mapHome.chestSlot, parent.ctx);
+                pickupClick(getInvSlotIndex(27 + ChestSortProcess.hotbarSlot, container), parent.ctx);
+
+                // put the item back that could be in you hand now (player inv might not be empty)
+                pickupClick(this.mapHome.chestSlot, parent.ctx);
+
+                phase = 1;
+                return false;
+            case 2:
+                pickupClick(getInvSlotIndex(workingSlot, container), parent.ctx);
+                pickupClick(this.mapHome.shulkerSlot, parent.ctx);
+
+                // put the item back that could be in you hand now (player inv might not be empty)
+                pickupClick(getInvSlotIndex(workingSlot, container), parent.ctx);
+
+                phase = 3;
+                return false;
+
         }
 
-        //if (this.openContainer == null) throw new IllegalStateException();
+        return false;
+    }
 
-                // from chest to inv
-                /*pickupClick(currentlyMoving.getFirst().from.slot, parent.ctx);
-                pickupClick(getInvSlotIndex(WORKING_SLOT, container), parent.ctx);
-
-                this.currentlyMoving = new Tuple<>(this.currentlyMoving.getFirst(), ChestSortProcess.SortingChestVisitor.SortState.MOVING); // change the state
-                this.currentTarget = this.currentlyMoving.getFirst().to.chest;
-*/
-
-                //this.openContainer = null; // close chest
-                //return false;
-        pickupClick(workingSlot, parent.ctx);
-        pickupClick(getInvSlotIndex(workingSlot, container), parent.ctx);
-
-        // put the item back that could be in you hand now (player inv might not be empty)
-        pickupClick(workingSlot, parent.ctx);
-
-
-        workingSlot ++;
-
-
-
-        return true;
-
+    @Override
+    public BlockPos getGoalPos() {
+        switch(this.phase){
+            case 0:
+                return mapHome.chestCoords;
+            case 1:
+            case 2:
+                return ChestSortProcess.shulkerPos;
+        }
+        return null;
     }
 
     @Override
     public ChestSortProcess.ChestVisitor getNextVisitor(){
-        return new PutMapVisitor(parent);
+        return PutMapVisitor.getPutMapVisitor(parent);
     }
 
     private static int getInvSlotIndex(int slot, Container chest) {
@@ -133,19 +167,20 @@ public class PutMapVisitor extends ChestSortProcess.ChestVisitor {
     }
 
    
+    public static class MapHome {
+        BlockPos chestCoords;
+        int chestSlot;
+        int shulkerSlot;
 
-    // combine 2 iterators into list of pairs
-    // second argument must at least have the same number of elements as the first argument
-    // any extra elements from the second iterator are unused
-    private static <T extends Tuple<?, ?>, A, B> List<T> combine(Iterator<A> iterA, Iterator<B> iterB, BiFunction<A, B, T> toPairFn) {
-        final List<T> out = new ArrayList<>();
+        int mapId;
 
-        while(iterA.hasNext()) {
-            if (!iterB.hasNext()) throw new IllegalArgumentException("second argument must not have less elements than the first argument");
-            out.add(toPairFn.apply(iterA.next(), iterB.next()));
+        public MapHome(BlockPos chestCoords, int chestSlot, int shulkerSlot, int mapId){
+            this.chestCoords = chestCoords;
+            this.chestSlot = chestSlot;
+            this.shulkerSlot = shulkerSlot;
+            this.mapId = mapId;
         }
 
-        return out;
     }
 
 }
