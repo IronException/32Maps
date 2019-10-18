@@ -23,18 +23,40 @@ import baritone.process.ChestSortProcess;
 
 public class EditChestShulkerProcess extends SubProcess {
 
-    public EditChestShulkerProcess(SubProcess nextProcess) {
-        super(nextProcess);
+    public EditChestShulkerProcess(BlockPos chestCoords, SubProcess doInChest) {
+        super(
+new OpenChest(chestCoords,
+doInChest));
+
+/*
+putShulkerProcess(chestCoords, chestSlot, hotbar, shulkerCoords, invSlot, shulkerSlot, bool putBack):
+-> goto chestCoords
+-> openChest
+-> swapSlots(chestSlot, hotbar)
+-> closeChest
+-> goto shulkerCoords
+-> place shulker
+-> openShulker
+-> swapSlot(invSlot, shulkerSlot)
+-> closeShulker
+-> breakShulker
+if putBack:
+-> pick up
+-> goto chestCoords
+-> open Chest
+-> swapSlot(hotbar, chestSlot)
+-> closeChest*/
+
     }
 
     @Override
     public boolean finished() {
-        return false;
+        return true; // next process will be executed
     }
 
     @Override
     public void tick() {
-
+// dont need to do anything. its all in nextProcess
     }
 
 }
