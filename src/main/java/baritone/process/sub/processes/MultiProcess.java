@@ -17,22 +17,48 @@
 
 package baritone.process.sub.processes;
 
-import net.minecraft.util.math.BlockPos;
+import baritone.api.process.PathingCommand;
 
-public class OpenContainerProcess extends SubProcess {
+public class MultiProcess extends SubProcess {
 
-    public OpenContainerProcess(BlockPos blockCoords, SubProcess nextProcess) {
-        super(nextProcess);
+    protected SubProcess[] processes;
+    protected int i;
+
+    public MultiProcess(SubProcess[] processes) {
+        super(new Epsilon());
+
+        this.processes = processes;
+        i = 0;
     }
 
     @Override
     public boolean finished() {
-        return false;
+        if(this.processes[i].finished())
+            i ++;
+        return i >= processes.length;
     }
 
     @Override
-    public void tick(){
+    public boolean superFinished(){
+        return finished() && nextProcess.superFinished();
+    }
 
+    @Override
+    public void tick() {
+        this.processes[i].tick();
+    }
+
+    @Override
+    public void superTick(){
+        if(finished())
+            nextProcess.superTick();
+        else
+            tick();
+    }
+
+    @Override
+    public PathingCommand getReturn(){
+        return this.processes[i].getReturn();
     }
 
 }

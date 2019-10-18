@@ -18,14 +18,16 @@
 package baritone.process.sub.processes;
 
 
-import baritone.api.process.PathingCommand;
-import baritone.process.ChestSortProcess;
+
+
+
+import net.minecraft.util.math.BlockPos;
 
 public class EditChestShulkerProcess extends SubProcess {
 
     public EditChestShulkerProcess(BlockPos chestCoords, SubProcess doInChest) {
         super(
-new OpenChest(chestCoords,
+new OpenContainerProcess(chestCoords,
 doInChest));
 
 /*

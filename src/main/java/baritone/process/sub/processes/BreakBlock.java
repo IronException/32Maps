@@ -17,35 +17,37 @@
 
 package baritone.process.sub.processes;
 
+import net.minecraft.util.math.BlockPos;
+
 public class BreakBlock extends LookProcess {
 
-public BreakBlock(BlockPos nearGoal, SubProcess nextProcess){
-super(nearGoal, nextProcess);
+    public BreakBlock(BlockPos nearGoal, SubProcess nextProcess) {
+        super(nearGoal, 2, nextProcess);
 
-}
+    }
 
-@Override
-public boolean finished(){
-return super.finished && false; // TODO
-}
+    @Override
+    public boolean finished() {
+        return super.finished() && false; // TODO
+    }
 
-@Override
-public void tick(){
+    @Override
+    public void tick() {
 
 
 // TODO
-}
+    }
 
 
-@Override
-public void superTick(){
-if(super.finished())
-  // super is already doing what we would need here
-  super.superTick();
-else
-  super.tick();
+    @Override
+    public void superTick() {
+        if (super.finished())
+            // super is already doing what we would need here
+            super.superTick();
+        else
+            super.tick();
 
 
-}
+    }
 
 }

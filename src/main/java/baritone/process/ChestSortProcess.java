@@ -30,10 +30,7 @@ import baritone.api.utils.IPlayerContext;
 import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
 import baritone.process.chest.sorter.*;
-import baritone.process.sub.processes.EditChestShulkerProcess;
-import baritone.process.sub.processes.Epsilon;
-import baritone.process.sub.processes.GoalNearProcess;
-import baritone.process.sub.processes.SubProcess;
+import baritone.process.sub.processes.*;
 import baritone.utils.BaritoneProcessHelper;
 import baritone.utils.chestsorter.Categories;
 import baritone.utils.chestsorter.Category;
@@ -81,20 +78,29 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         super(baritone);
         ChestSortProcess.INSTANCE = this;
 
-
+        this.process = getProcessBuild();
     }
 
 
     public SubProcess getProcessBuild(){
-        return new GoalNearProcess(targetPos, 2,
-                new EditChestShulkerProcess(new Epsilon())
-        );
+        /*return new GoalNearProcess(targetPos, 2,
+                new EditChestShulkerProcess(targetPos, new Epsilon())
+        ); // TODO its going to the same pos twice like this. so redo that....
+        */
+
+
+        return new MultiProcess(new SubProcess[]{
+            new GoalNearProcess(targetPos, 2, new GoalNearProcess(targetPos.add(5, 0, -10), 1, new Epsilon())),
+            new Epsilon(),
+            new GoalNearProcess(targetPos, 2, new Epsilon())
+
+        });
     }
 
 
     @Override
     public boolean isActive() {
-        return this.process.finished() && this.active;
+        return this.active && this.process.finished();
     }
 
     @Override
@@ -108,7 +114,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         // test wether maps in inv
 
-        if(this.process == null || this.process.finished())
+        if(this.process.finished())
             this.process = getProcessBuild();
 
 

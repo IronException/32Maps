@@ -17,10 +17,8 @@
 
 package baritone.process.sub.processes;
 
-import baritone.api.process.PathingCommand;
 import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
-import jdk.nashorn.internal.ir.Block;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
