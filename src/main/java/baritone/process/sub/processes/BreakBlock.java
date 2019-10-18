@@ -17,5 +17,28 @@
 
 package baritone.process.sub.processes;
 
-public class BreakBlock {
+public class BreakBlock extends LookProcess {
+
+public BreakBlock(BlockPos nearGoal, SubProcess nextProcess){
+super(nearGoal, nextProcess);
+
+}
+
+@Override
+public boolean finished(){
+return false; // TODO
+}
+
+@Override
+public void tick(){
+if(!super.finished()){
+  super.tick();
+  return;
+}
+
+  
+// TODO
+
+}
+
 }
