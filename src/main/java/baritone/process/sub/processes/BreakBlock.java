@@ -26,18 +26,25 @@ super(nearGoal, nextProcess);
 
 @Override
 public boolean finished(){
-return false; // TODO
+return super.finished && false; // TODO
 }
 
 @Override
 public void tick(){
-if(!super.finished()){
-  super.tick();
-  return;
+
+
+// TODO
 }
 
-  
-// TODO
+
+@Override
+public void superTick(){
+if(super.finished())
+  // super is already doing what we would need here
+  super.superTick();
+else
+  super.tick();
+
 
 }
 
