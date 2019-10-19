@@ -21,13 +21,13 @@ import baritone.Baritone;
 import baritone.api.event.events.PacketEvent;
 import baritone.api.event.events.type.EventState;
 import baritone.api.event.listener.AbstractGameEventListener;
+import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.process.IChestSortProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.api.utils.IPlayerContext;
 import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
-import baritone.process.chest.sorter.*;
 import baritone.process.sub.processes.*;
 import baritone.utils.BaritoneProcessHelper;
 import baritone.utils.chestsorter.Categories;
@@ -86,9 +86,10 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
 
         return new MultiProcess(new SubProcess[]{
-            new GoalNearProcess(targetPos, 2, new GoalNearProcess(targetPos.add(5, 0, -10), 1, new Epsilon())),
-            new Epsilon(),
-            new GoalNearProcess(targetPos, 2, new Epsilon())
+                new ChatProcess("first", new ChatProcess("targetPos.add(5, 0, -10), 1", new Epsilon())),
+                new Epsilon(),
+                new GoalNearProcess(targetPos, 2, new Epsilon()),
+                new ChatProcess("end", new LookProcess(targetPos, 2, new ChatProcess("for real now", new Epsilon())))
 
         });
     }
@@ -96,7 +97,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
     @Override
     public boolean isActive() {
-        return this.active && this.process.isFinished();
+        return this.active;// && this.process.isFinished();
     }
 
     @Override
@@ -110,61 +111,17 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         // test wether maps in inv
 
-        if(this.process.isFinished())
-            this.process = getProcessBuild();
+        if(this.process.finished())
+            this.active = false;
 
 
         this.process.tick();
 
 
-
-
-/*
-        if(this.chestVisitor == null)
-            this.chestVisitor = new GetMapVisitor(this, targetPos);
-
-        if (isChestOpen(ctx)) {
-            if (!this.chestVisitor.containerOpenTick((Container) ctx.player().openContainer) || this.chestVisitor.finished()) {
-                logDirect("FUCK YOU JUST LEAVE THE CONTAINER");
-                ctx.player().closeScreenAndDropStack();
-            }
-        }
-
-        if(this.chestVisitor.finished())
-            this.chestVisitor = chestVisitor.getNextVisitor();
-
-
-        // after getting the maps
-        // we need to calculate new goal
-
-        
-        Goal goal = new GoalNear(chestVisitor.getGoalPos(), 2);
-
-
-        Optional<Rotation> newRotation = RotationUtils.reachable(ctx, chestVisitor.getGoalPos()); //getRotationForChest(target); // may be aiming at different chest than targetPos but thats fine
-        newRotation.ifPresent(rotation -> {
-            baritone.getLookBehavior().updateTarget(rotation, true);
-        });
-
-
-        if (!(isChestOpen(ctx)) && ctx.isLookingAt(chestVisitor.getGoalPos())) {
-            if (this.chestVisitor.openChest()) {
-                final RayTraceResult trace = ctx.objectMouseOver();
-                ctx.playerController().processRightClickBlock(ctx.player(), ctx.world(), chestVisitor.getGoalPos(), trace.sideHit, trace.hitVec, EnumHand.OFF_HAND);
-            } else if(this.chestVisitor instanceof PutMapVisitor)
-                ((PutMapVisitor) this.chestVisitor).tickExChest();
-        }
-
-        logDirect(chestVisitor + " " + chestVisitor.getDebug());
-
-*/
-
-
-
-
-
-
-        return process.getReturn();//new PathingCommand(goal, PathingCommandType.REVALIDATE_GOAL_AND_PATH);
+        PathingCommand rV = process.getReturn();
+        if (rV == null)
+            rV = new PathingCommand(new GoalBlock(ctx.playerFeet()), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
+        return rV;
     }
 
 
