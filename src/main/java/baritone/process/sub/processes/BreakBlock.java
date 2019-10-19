@@ -17,37 +17,58 @@
 
 package baritone.process.sub.processes;
 
+import baritone.api.pathing.goals.GoalNear;
+import baritone.api.process.PathingCommand;
+import baritone.api.process.PathingCommandType;
+import baritone.api.utils.Rotation;
+import baritone.api.utils.RotationUtils;
+import baritone.api.utils.input.Input;
+import baritone.pathing.movement.MovementHelper;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.Optional;
 
 public class BreakBlock extends LookProcess {
 
     public BreakBlock(BlockPos nearGoal, SubProcess nextProcess) {
-        super(nearGoal, 2, nextProcess);
+        super(nearGoal, 2,
+                new SubProcess(nextProcess) {
+
+                    @Override
+                    public boolean isFinished() {
+                        return false;
+                    }
+
+                    @Override
+                    public void doTick() {
+                        if (ctx.player().onGround) {
+                            IBlockState state = baritone.bsi.get0(nearGoal);
+                            if (!MovementHelper.avoidBreaking(baritone.bsi, nearGoal.getX(), nearGoal.getY(), nearGoal.getZ(), state)) {
+                                Optional<Rotation> rot = RotationUtils.reachable(ctx, nearGoal);
+                                if (rot.isPresent()) {
+                                    baritone.getLookBehavior().updateTarget(rot.get(), true);
+                                    MovementHelper.switchToBestToolFor(ctx, ctx.world().getBlockState(nearGoal));
+                                    if (ctx.isLookingAt(nearGoal) || ctx.playerRotations().isReallyCloseTo(rot.get()))
+                                        baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_LEFT, true);
+                                }
+                            }
+                        }
+                    }
+                });
 
     }
 
-    @Override
-    public boolean isFinished() {
-        return super.isFinished() && false; // TODO
-    }
+    // super got us covered with the ticks...
 
     @Override
-    public void doTick() {
+    public PathingCommand generateReturn() {
+        if (ctx.player().onGround)
+            if (!MovementHelper.avoidBreaking(baritone.bsi, nearGoal.getX(), nearGoal.getY(), nearGoal.getZ(), baritone.bsi.get0(nearGoal)))
+                if (RotationUtils.reachable(ctx, nearGoal).isPresent())
+                    return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
 
-
-// TODO
-    }
-
-
-    @Override
-    public void tick() {
-        if (super.isFinished())
-            // super is already doing what we would need here
-            super.tick();
-        else
-            super.doTick();
-
-
+         return super.generateReturn();
     }
 
 }
