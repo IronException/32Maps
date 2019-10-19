@@ -26,22 +26,22 @@ public class Epsilon extends SubProcess {
     }
 
     @Override
-    public boolean finished(){
+    public boolean isFinished(){
         return true;
     }
 
     @Override
-    public boolean superFinished(){
-        return finished();
+    public boolean finished(){
+        return isFinished();
     }
 
     @Override
-    public void tick(){
+    public void doTick(){
         // nothing
     }
 
     @Override
-    public void superTick(){
+    public void tick(){
         // make sure there is no NullPointerException
     }
 

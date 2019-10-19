@@ -30,12 +30,12 @@ public class LookProcess extends GoalNearProcess {
     }
 
     @Override
-    public boolean finished(){
+    public boolean isFinished(){
         return ctx.isLookingAt(nearGoal);
     }
 
     @Override
-    public void tick(){
+    public void doTick(){
         Optional<Rotation> newRotation = RotationUtils.reachable(ctx, nearGoal); //getRotationForChest(target); // may be aiming at different chest than targetPos but thats fine
         newRotation.ifPresent(rotation -> {
             baritone.getLookBehavior().updateTarget(rotation, true);

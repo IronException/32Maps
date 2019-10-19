@@ -21,8 +21,6 @@ import baritone.Baritone;
 import baritone.api.event.events.PacketEvent;
 import baritone.api.event.events.type.EventState;
 import baritone.api.event.listener.AbstractGameEventListener;
-import baritone.api.pathing.goals.Goal;
-import baritone.api.pathing.goals.GoalNear;
 import baritone.api.process.IChestSortProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
@@ -43,9 +41,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SPacketCloseWindow;
 import net.minecraft.network.play.server.SPacketWindowItems;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -100,7 +96,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
     @Override
     public boolean isActive() {
-        return this.active && this.process.finished();
+        return this.active && this.process.isFinished();
     }
 
     @Override
@@ -114,11 +110,11 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         // test wether maps in inv
 
-        if(this.process.finished())
+        if(this.process.isFinished())
             this.process = getProcessBuild();
 
 
-        this.process.superTick();
+        this.process.tick();
 
 
 

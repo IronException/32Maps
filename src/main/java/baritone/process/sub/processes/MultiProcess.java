@@ -34,12 +34,12 @@ public class MultiProcess extends SubProcess {
     }
 
     @Override
-    public boolean finished() {
+    public boolean isFinished() {
         return this.process.finished();
     }
 
     @Override
-    public void tick() {
+    public void doTick() {
         this.process.tick();
     }
 

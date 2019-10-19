@@ -52,12 +52,12 @@ if putBack:
     }
 
     @Override
-    public boolean finished() {
+    public boolean isFinished() {
         return true; // next process will be executed
     }
 
     @Override
-    public void tick() {
+    public void doTick() {
 // dont need to do anything. its all in nextProcess
     }
 

@@ -41,20 +41,21 @@ public abstract class SubProcess {
         this.player = this.ctx.player();
     }
 
-    public abstract boolean finished();
+    public abstract boolean isFinished();
 
-    public boolean superFinished(){
-        return finished() && nextProcess.superFinished();
+    public boolean finished(){
+        return isFinished() && nextProcess.finished();
     }
 
 
-    public abstract void tick();
 
-    public void superTick(){
-        if(finished())
-            nextProcess.superTick();
+    public abstract void doTick();
+
+    public void tick(){
+        if(isFinished())
+            nextProcess.tick();
         else
-            tick();
+            doTick();
     }
 
     public PathingCommand getReturn(){

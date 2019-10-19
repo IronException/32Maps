@@ -26,12 +26,12 @@ public class OpenContainerProcess extends SubProcess {
     }
 
     @Override
-    public boolean finished() {
+    public boolean isFinished() {
         return false;
     }
 
     @Override
-    public void tick(){
+    public void doTick(){
 
     }
 

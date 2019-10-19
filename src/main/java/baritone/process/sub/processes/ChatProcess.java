@@ -31,12 +31,12 @@ public class ChatProcess extends SubProcess implements Helper {
     }
 
     @Override
-    public boolean finished() {
+    public boolean isFinished() {
         return this.told;
     }
 
     @Override
-    public void tick() {
+    public void doTick() {
         logDirect(toWrite);
         this.told = true;
     }

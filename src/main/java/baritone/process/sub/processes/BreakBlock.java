@@ -27,12 +27,12 @@ public class BreakBlock extends LookProcess {
     }
 
     @Override
-    public boolean finished() {
-        return super.finished() && false; // TODO
+    public boolean isFinished() {
+        return super.isFinished() && false; // TODO
     }
 
     @Override
-    public void tick() {
+    public void doTick() {
 
 
 // TODO
@@ -40,12 +40,12 @@ public class BreakBlock extends LookProcess {
 
 
     @Override
-    public void superTick() {
-        if (super.finished())
+    public void tick() {
+        if (super.isFinished())
             // super is already doing what we would need here
-            super.superTick();
-        else
             super.tick();
+        else
+            super.doTick();
 
 
     }

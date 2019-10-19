@@ -34,12 +34,12 @@ public class GoalNearProcess extends SubProcess {
     }
 
     @Override
-    public boolean finished() {
+    public boolean isFinished() {
         return true; // TODO is this right?
     }
 
     @Override
-    public void tick() {
+    public void doTick() {
         // returning is my job
     }
 
