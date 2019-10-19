@@ -21,44 +21,44 @@ import baritone.api.process.PathingCommand;
 
 public class MultiProcess extends SubProcess {
 
-    protected SubProcess[] processes;
-    protected int i;
+    protected SubProcess process;
 
     public MultiProcess(SubProcess[] processes) {
-        super(new Epsilon());
+        super(extractNextProcess(processes));
 
-        this.processes = processes;
-        i = 0;
+        if(processes.length > 0)
+            this.process = processes[0];
+        else
+            this.process = new Epsilon();
+
     }
 
     @Override
     public boolean finished() {
-        if(this.processes[i].finished())
-            i ++;
-        return i >= processes.length;
-    }
-
-    @Override
-    public boolean superFinished(){
-        return finished() && nextProcess.superFinished();
+        return this.process.finished();
     }
 
     @Override
     public void tick() {
-        this.processes[i].tick();
+        this.process.tick();
     }
 
-    @Override
-    public void superTick(){
-        if(finished())
-            nextProcess.superTick();
-        else
-            tick();
-    }
 
     @Override
     public PathingCommand getReturn(){
-        return this.processes[i].getReturn();
+        return this.process.getReturn();
     }
 
+
+
+    private static SubProcess extractNextProcess(SubProcess[] in){
+        if(in.length < 1) // < 2 because index 0 is handled in this instance and next one wouldnt have anything anymore
+            return new Epsilon();
+
+        SubProcess[] rV = new SubProcess[in.length - 1];
+        for (int i = 0; i < rV.length; i++) {
+            rV[i] = in[i + 1];
+        }
+        return new MultiProcess(rV);
+    }
 }
