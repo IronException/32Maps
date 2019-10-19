@@ -18,35 +18,14 @@
 package baritone.process;
 
 import baritone.Baritone;
-import baritone.api.event.events.PacketEvent;
-import baritone.api.event.events.type.EventState;
 import baritone.api.event.listener.AbstractGameEventListener;
 import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.process.IChestSortProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
-import baritone.api.utils.IPlayerContext;
-import baritone.api.utils.Rotation;
-import baritone.api.utils.RotationUtils;
 import baritone.process.sub.processes.*;
 import baritone.utils.BaritoneProcessHelper;
-import baritone.utils.chestsorter.Categories;
-import baritone.utils.chestsorter.Category;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerChest;
-import net.minecraft.inventory.ContainerShulkerBox;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.SPacketCloseWindow;
-import net.minecraft.network.play.server.SPacketWindowItems;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
-
-import javax.annotation.Nullable;
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public final class ChestSortProcess extends BaritoneProcessHelper implements IChestSortProcess, AbstractGameEventListener {
     private static final PathingCommand NO_PATH = new PathingCommand(null, PathingCommandType.DEFER);
