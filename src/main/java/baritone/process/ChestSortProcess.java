@@ -63,10 +63,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
     private boolean active = false;
 
-
     public static ChestSortProcess INSTANCE;
-
-    ChestVisitor chestVisitor;
 
     SubProcess process;
 
@@ -74,7 +71,6 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         super(baritone);
         ChestSortProcess.INSTANCE = this;
 
-        this.process = getProcessBuild();
     }
 
 
@@ -103,6 +99,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     @Override
     public void activate() {
         this.active = true;
+        this.process = getProcessBuild();
     }
 
 
@@ -131,7 +128,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         this.active = false;
 
         // reset the state
-        chestVisitor = null;
+        process = null;
     }
 
     @Override
@@ -140,240 +137,5 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     }
 
 
-
-    private static boolean isChestOpen(IPlayerContext ctx) {
-        return ctx.player().openContainer instanceof ContainerChest || ctx.player().openContainer instanceof ContainerShulkerBox;
-    }
-
-    private static Comparator<UniqueChest> closestChestToPlayer(EntityPlayerSP player) {
-        return Comparator.comparingDouble(unique ->
-            unique.getAllChests()
-                .stream()
-                .mapToDouble(tileEnt -> player.getDistanceSq(tileEnt.getPos()))
-                .min()
-                .getAsDouble() // UniqueChest should be guaranteed to have at least 1 chest
-        );
-    }
-
-    private static Comparator<TileEntityChest> closestTileEntToPlayer(EntityPlayerSP player) {
-        return Comparator.comparingDouble(tileEnt -> player.getDistanceSq(tileEnt.getPos()));
-    }
-
-    public static final class UniqueChest {
-        private final Set<TileEntityChest> connectedChests; // always has at least 1 chest
-
-        public UniqueChest(TileEntityChest chest) {
-            this(getConnectedChests(chest));
-        }
-
-        public UniqueChest(Set<TileEntityChest> connectedChests) {
-            if (connectedChests.isEmpty()) throw new IllegalArgumentException("Must have at least 1 chest");
-            if (!connectedChests.equals(getConnectedChests(connectedChests.iterator().next()))) throw new IllegalArgumentException("bad"); // lol
-            this.connectedChests = Collections.unmodifiableSet(connectedChests);
-        }
-
-        public int slotCount() {
-            return connectedChests.size() * (9 * 3);
-        }
-
-        public boolean isConnected(TileEntityChest chest) {
-            return connectedChests.contains(chest);
-        }
-
-        // immutable
-        public Set<TileEntityChest> getAllChests() {
-            return this.connectedChests;
-        }
-
-        public TileEntityChest closestChest(IPlayerContext ctx) {
-            return this.getAllChests().stream()
-                .min(closestTileEntToPlayer(ctx.player()))
-                .get();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o.getClass() != this.getClass()) return false;
-            UniqueChest that = (UniqueChest) o;
-            return connectedChests.equals(that.connectedChests);
-        }
-
-        @Override
-        public int hashCode() {
-            return connectedChests.hashCode();
-        }
-    }
-
-    private static final class StackLocation {
-        public final UniqueChest chest; // TODO: use UniqueChest
-        public final int slot;
-
-        public StackLocation(UniqueChest chest, int slot) {
-            this.chest = chest;
-            this.slot = slot;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o.getClass() != this.getClass()) return false;
-            StackLocation that = (StackLocation) o;
-            return slot == that.slot &&
-                chest.equals(that.chest);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(chest, slot);
-        }
-
-        @Override
-        public String toString() {
-            return String.format("StackLocation(%s, %d)", this.chest.toString(), this.slot);
-        }
-    }
-
-    public static abstract class ChestVisitor {
-        protected final ChestSortProcess parent; // non static inner class does not allow static methods :^(
-
-        @Nullable
-        protected UniqueChest currentTarget;
-
-        public String getDebug(){
-            return "";
-        }
-
-        public boolean openChest(){
-            return true;
-        }
-
-        protected ChestVisitor(ChestSortProcess parent) {
-            this.parent = parent;
-        }
-
-        public abstract ChestVisitor getNextVisitor();
-
-        public final Optional<UniqueChest> getCurrentTarget() {
-            return Optional.ofNullable(this.currentTarget);
-        }
-
-        // maybe should just check if target is empty??
-        public abstract boolean finished();
-
-        // return true if this visitor must do more work
-        public abstract boolean onContainerOpened(Container container);
-
-        // Called when SPacketCloseWindow is received.
-        // This may happen unexpectedly while the visitor is doing stuff and this visitor may want to call onLostControl in that case
-        public void onContainerClosed(int windowId) {}
-
-        // do some work while the container is open
-        // return true if the container should stay open
-        public abstract boolean containerOpenTick(Container container);
-
-        public abstract BlockPos getGoalPos();
-    }
-
-
-    @Override
-    public void onReceivePacket(PacketEvent event) {
-        if (event.getState() != EventState.POST) return;
-        if (!this.active) return;
-
-        if (event.getPacket() instanceof SPacketWindowItems) {
-            final SPacketWindowItems packet = event.cast();
-
-            Minecraft.getMinecraft().addScheduledTask(() -> { // cant be on netty thread
-                final Container openContainer = ctx.player().openContainer;
-                if (isChestOpen(ctx) && openContainer.windowId == packet.getWindowId()) {
-                    Container containerChest = (Container)openContainer;
-                    // we just got the items for the chest we have open
-                    // the server sends our inventory with the chest inventory but we only care about chest inventory so only use the first 27/54 slots
-                   ///final List<ItemStack> chestItems = packet.getItemStacks().subList(0, containerChest.getLowerChestInventory().getSizeInventory());
-                    final boolean stayOpen = this.chestVisitor.onContainerOpened((Container) openContainer);
-                    if (!stayOpen/*this.getVisitor().wantsContainerOpen()*/) {
-                        ctx.player().closeScreenAndDropStack();
-                    }
-                }
-            });
-        }
-        if (event.getPacket() instanceof SPacketCloseWindow) {
-            // TODO: check if chest still exists
-            final Field idField = SPacketCloseWindow.class.getDeclaredFields()[0]; // lol
-            idField.setAccessible(true);
-            try {
-                this.chestVisitor.onContainerClosed((Integer) idField.get(event.getPacket()));
-            } catch (ReflectiveOperationException ex) {
-                System.out.println("oyyy vey " + ex.toString());
-                throw new RuntimeException(ex);
-            }
-        }
-    }
-
-
-    private Optional<Rotation> getRotationForChest(UniqueChest chestIn) {
-        return chestIn.getAllChests().stream()
-            .sorted(closestTileEntToPlayer(ctx.player()))
-            .map(chest -> RotationUtils.reachable(ctx, chest.getPos()))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .findFirst();
-    }
-
-
-
-    // takes any list of chests and returns a new list of chests where no 2 chests in the list are connected
-    private Set<UniqueChest> getUniqueChests(final Collection<TileEntityChest> chestsIn) {
-        final Set<Set<TileEntityChest>> graphs = new HashSet<>(); // set of graphs
-
-        // this code is O(1) but more complicated
-        /*Set<TileEntityChest> chestsToAdd = new HashSet<>(chestsIn);
-        Iterator<TileEntityChest> iterator = chestsToAdd.iterator();
-        while (iterator.hasNext()) {
-            final TileEntityChest next = iterator.next();
-            if (graphs.stream().noneMatch(set -> set.contains(next))) {
-                final Set<TileEntityChest> newGraph = getConnectedChests(next);
-                graphs.add(newGraph);
-                chestsToAdd = Sets.difference(chestsToAdd, newGraph);
-                iterator = chestsToAdd.iterator();
-            }
-        }*/
-        for (TileEntityChest iter : chestsIn) {
-            if (graphs.stream().noneMatch(set -> set.contains(iter))) {
-                final Set<TileEntityChest> newGraph = getConnectedChests(iter);
-                graphs.add(newGraph);
-            }
-        }
-
-        return graphs.stream().map(UniqueChest::new).collect(Collectors.toSet());
-    }
-
-
-    private static Set<TileEntityChest> getConnectedChests(TileEntityChest root) {
-        Set<TileEntityChest> out = new HashSet<>();
-        addToGraph(out, root);
-        return out;
-    }
-
-    private static void addToGraph(Set<TileEntityChest> graph, TileEntityChest node) {
-        if (node == null || graph.contains(node)) return;
-        graph.add(node);
-        addToGraph(graph, node.adjacentChestXNeg);
-        addToGraph(graph, node.adjacentChestXPos);
-        addToGraph(graph, node.adjacentChestZNeg);
-        addToGraph(graph, node.adjacentChestZPos);
-    }
-
-    private static class ItemSorter {
-
-        // temporary
-        public static int compare(ItemStack a, ItemStack b) {
-            return Comparator.<ItemStack>comparingInt(stack -> {
-                final int idx = Category.indexOf(stack, Categories.BASE_CATEGORY);
-                return idx == -1 ? Integer.MAX_VALUE : idx;
-            }).compare(a, b);
-        }
-    }
 
 }
