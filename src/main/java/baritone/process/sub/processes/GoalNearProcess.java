@@ -22,7 +22,7 @@ import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import net.minecraft.util.math.BlockPos;
 
-public class GoalNearProcess extends SubProcess {
+public class GoalNearProcess extends ReturnProcess {
 
     protected BlockPos nearGoal;
     protected int range;
@@ -34,18 +34,7 @@ public class GoalNearProcess extends SubProcess {
     }
 
     @Override
-    public boolean isFinished() {
-        return true; // TODO is this right?
-    }
-
-    @Override
-    public void doTick() {
-        // returning is my job
-    }
-
-    @Override
-    public PathingCommand getReturn() {
-        PathingCommand rV = super.getReturn();
-        return (rV != null) ? rV : new PathingCommand(new GoalNear(nearGoal, range), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
+    public PathingCommand generateReturn() {
+        return new PathingCommand(new GoalNear(nearGoal, range), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
     }
 }
