@@ -60,13 +60,12 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         */
 
 
-        return new MultiProcess(new SubProcess[]{
-                new ChatProcess("first", new ChatProcess("targetPos.add(5, 0, -10), 1", new Epsilon())),
-                new Epsilon(),
-                new GoalNearProcess(targetPos, 2, new Epsilon()),
-                new ChatProcess("end", new LookProcess(targetPos, 2, new ChatProcess("for real now", new Epsilon())))
+        return
+                new ChatProcess("start",
+                        new LookProcess(targetPos, 2,
+                                new ChatProcess("end",
+                                        new Epsilon())));
 
-        });
     }
 
 

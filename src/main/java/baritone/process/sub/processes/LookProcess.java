@@ -23,23 +23,45 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
 
-public class LookProcess extends GoalNearProcess {
+public class LookProcess extends SubProcess {
+
+    GoalNearProcess goAndLook;
 
     public LookProcess(BlockPos nearGoal, int range, SubProcess nextProcess) {
-        super(nearGoal, range, nextProcess);
+        super(nextProcess);
+
+        this.goAndLook = new GoalNearProcess(nearGoal, range,
+                new SubProcess(new Epsilon()) {
+
+            // this what actually happens here
+
+                    @Override
+                    public boolean isFinished() {
+                        return ctx.isLookingAt(nearGoal);
+                    }
+
+                    @Override
+                    public void doTick() {
+
+                        
+                        logDirect("look now");
+                        Optional<Rotation> newRotation = RotationUtils.reachable(ctx, nearGoal); //getRotationForChest(target); // may be aiming at different chest than targetPos but thats fine
+                        newRotation.ifPresent(rotation -> {
+                            baritone.getLookBehavior().updateTarget(rotation, true);
+                        });
+                    }
+                });
+
     }
 
     @Override
     public boolean isFinished(){
-        return ctx.isLookingAt(nearGoal);
+        return goAndLook.finished();
     }
 
     @Override
     public void doTick(){
-        Optional<Rotation> newRotation = RotationUtils.reachable(ctx, nearGoal); //getRotationForChest(target); // may be aiming at different chest than targetPos but thats fine
-        newRotation.ifPresent(rotation -> {
-            baritone.getLookBehavior().updateTarget(rotation, true);
-        });
+        goAndLook.tick();
     }
 
 
