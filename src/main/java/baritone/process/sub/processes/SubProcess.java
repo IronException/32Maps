@@ -19,11 +19,12 @@ package baritone.process.sub.processes;
 
 import baritone.Baritone;
 import baritone.api.process.PathingCommand;
+import baritone.api.utils.Helper;
 import baritone.api.utils.IPlayerContext;
 import baritone.process.ChestSortProcess;
 import net.minecraft.client.entity.EntityPlayerSP;
 
-public abstract class SubProcess {
+public abstract class SubProcess implements Helper { // TODO remove in the end
 
     protected SubProcess nextProcess;
 
