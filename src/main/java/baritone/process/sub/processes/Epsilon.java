@@ -46,9 +46,13 @@ public class Epsilon extends SubProcess {
     }
 
     @Override
-    public PathingCommand getReturn(){
-        return null;
+    public PathingCommand getReturn() {
+        return getReturn(null);
     }
 
+    @Override
+    public PathingCommand getReturn(PathingCommand alt) {
+        return alt;
+    }
 
 }

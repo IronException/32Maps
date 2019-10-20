@@ -33,7 +33,7 @@ public abstract class SubProcess implements Helper { // TODO remove in the end
     protected IPlayerContext ctx;
     protected EntityPlayerSP player;
 
-    public SubProcess(SubProcess nextProcess){
+    public SubProcess(SubProcess nextProcess) {
         this.nextProcess = nextProcess;
 
         this.parent = ChestSortProcess.INSTANCE;
@@ -44,29 +44,26 @@ public abstract class SubProcess implements Helper { // TODO remove in the end
 
     public abstract boolean isFinished();
 
-    public boolean finished(){
+    public boolean finished() {
         return isFinished() && nextProcess.finished();
     }
 
 
-
     public abstract void doTick();
 
-    public void tick(){
-        if(isFinished())
+    public void tick() {
+        if (isFinished())
             nextProcess.tick();
         else
             doTick();
     }
 
-    public PathingCommand getReturn(){
+    public PathingCommand getReturn() {
         return getReturn(null);
     }
 
-    public PathingCommand getReturn(PathingCommand alt){
-        if(isFinished())
-            return nextProcess.getReturn(alt);
-        return alt;
+    public PathingCommand getReturn(PathingCommand alt) {
+        return (isFinished() || alt == null) ? nextProcess.getReturn(alt) : alt;
     }
 
 }

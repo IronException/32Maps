@@ -33,20 +33,18 @@ public abstract class ReturnProcess extends SubProcess {
 
     @Override
     public void doTick() {
-        // returning is my childrens job
+        // returning is my (childrens) job
     }
 
     @Override
-    public PathingCommand getReturn(){
-        PathingCommand rV = super.getReturn();
-        return (rV != null) ? rV : generateReturn();
+    public PathingCommand getReturn() {
+        PathingCommand rV = this.generateReturn();
+        return isFinished() ? nextProcess.getReturn(rV) : rV;
     }
 
     @Override
     public PathingCommand getReturn(PathingCommand alt) {
-        if(isFinished())
-            return nextProcess.getReturn(alt);
-        return alt;
+        return this.getReturn();
     }
 
     /*
@@ -75,6 +73,14 @@ public abstract class ReturnProcess extends SubProcess {
 
     ==|===|=--
           ^ that one
+
+    = area is finished
+    - area is !finished
+
+    better one:
+        normal: if (finished) { return next.getReturn(alt) } else { if (alt == null) { return next.getReturn(alt) } else { return alt } }
+        return: if (finished) { return next.getReturn(this.generate()) } else { return this.generate() }
+
 
     how to do that?
 
