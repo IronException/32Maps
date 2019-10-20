@@ -42,6 +42,12 @@ public abstract class ReturnProcess extends SubProcess {
         return (rV != null) ? rV : generateReturn();
     }
 
+    @Override
+    public PathingCommand getReturn(PathingCommand alt) {
+        if(isFinished())
+            return nextProcess.getReturn(alt);
+        return alt;
+    }
 
     /*
 

@@ -60,9 +60,13 @@ public abstract class SubProcess implements Helper { // TODO remove in the end
     }
 
     public PathingCommand getReturn(){
+        return getReturn(null);
+    }
+
+    public PathingCommand getReturn(PathingCommand alt){
         if(isFinished())
-            return nextProcess.getReturn();
-        return null;
+            return nextProcess.getReturn(alt);
+        return alt;
     }
 
 }
