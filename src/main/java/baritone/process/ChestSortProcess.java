@@ -62,7 +62,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         return
                 new ChatProcess("start",
-                        new LookProcess(targetPos, 2,
+                        new PlaceBlock(targetPos,
                                 new ChatProcess("end",
                                         new Epsilon())));
 
@@ -94,8 +94,11 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
 
         PathingCommand rV = process.getReturn();
-        if (rV == null)
+        if (rV == null) {
+            logDirect("No SubProcess returned a PathingCommand. THIS HAS TO BE FIXED");
+            // could also be Request Pause
             rV = new PathingCommand(new GoalBlock(ctx.playerFeet()), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
+        }
         return rV;
     }
 
