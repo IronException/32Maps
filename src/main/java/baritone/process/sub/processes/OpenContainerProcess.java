@@ -17,9 +17,18 @@
 
 package baritone.process.sub.processes;
 
+import baritone.api.process.PathingCommand;
+import baritone.api.utils.IPlayerContext;
 import net.minecraft.util.math.BlockPos;
 
-public class OpenContainerProcess extends SubProcess {
+public class OpenContainerProcess extends ReturnProcess {
+
+    /**
+     *
+     *
+     * @param blockCoords
+     * @param nextProcess
+     */
 
     public OpenContainerProcess(BlockPos blockCoords, SubProcess nextProcess) {
         super(nextProcess);
@@ -27,12 +36,21 @@ public class OpenContainerProcess extends SubProcess {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return isChestOpen(ctx);
+    }
+
+    private boolean isChestOpen(IPlayerContext ctx) {
+
     }
 
     @Override
     public void doTick(){
 
+    }
+
+    @Override
+    public PathingCommand generateReturn() {
+        return null;
     }
 
 }
