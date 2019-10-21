@@ -32,7 +32,13 @@ import java.util.Optional;
 public class BreakBlock extends GoalNearProcess {
 
     public BreakBlock(BlockPos nearGoal, SubProcess nextProcess) {
-        super(nearGoal, 2, nextProcess);
+        super(nearGoal, 2, new OneTimeCommand(nextProcess) {
+
+            @Override
+            public void doTick() {
+                baritone.getInputOverrideHandler().clearAllKeys();
+            }
+        });
     }
 
     @Override
@@ -42,6 +48,8 @@ public class BreakBlock extends GoalNearProcess {
 
     @Override
     public void doTick() {
+        baritone.getInputOverrideHandler().clearAllKeys();
+
         if (ctx.player().onGround)
             if (!MovementHelper.avoidBreaking(baritone.bsi, super.nearGoal.getX(), super.nearGoal.getY(), super.nearGoal.getZ(), baritone.bsi.get0(super.nearGoal))) {
                 Optional<Rotation> rot = RotationUtils.reachable(ctx, super.nearGoal);

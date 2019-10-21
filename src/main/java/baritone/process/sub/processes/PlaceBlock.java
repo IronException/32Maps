@@ -35,7 +35,13 @@ public class PlaceBlock extends GoalNearProcess {
     private int hotbar;
 
     public PlaceBlock(BlockPos nearGoal, int hotbar, SubProcess nextProcess) {
-        super(nearGoal, 2, nextProcess);
+        super(nearGoal, 2, new OneTimeCommand(nextProcess) {
+
+            @Override
+            public void doTick() {
+                baritone.getInputOverrideHandler().clearAllKeys();
+            }
+        });
         this.hotbar = hotbar;
     }
 
