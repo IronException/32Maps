@@ -19,7 +19,7 @@ package baritone.process.sub.processes;
 
 import net.minecraft.util.math.BlockPos;
 
-public class DoInContainerProcess extends SubProcess {
+public class DoInContainerProcess extends SubProcess implements ChestHelper {
 
     /**
     // IMPORTANT: this opens and closes the chest and only then finishes
@@ -35,7 +35,7 @@ public class DoInContainerProcess extends SubProcess {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return !isChestOpen(ctx);
     }
 
     /**
@@ -54,7 +54,7 @@ public class DoInContainerProcess extends SubProcess {
 
     @Override
     public void doTick() {
-
+        ctx.player().closeScreenAndDropStack();
     }
 
 

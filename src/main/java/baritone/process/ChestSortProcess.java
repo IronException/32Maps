@@ -62,7 +62,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         return
                 new ChatProcess("start",
-                        new PlaceBlock(targetPos, 2,
+                        new DoInContainerProcess(targetPos,
                                 new ChatProcess("end",
                                         new Epsilon())));
 

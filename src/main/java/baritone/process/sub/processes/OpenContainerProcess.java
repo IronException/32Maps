@@ -17,11 +17,12 @@
 
 package baritone.process.sub.processes;
 
-import baritone.api.process.PathingCommand;
-import baritone.api.utils.IPlayerContext;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 
-public class OpenContainerProcess extends ReturnProcess {
+
+public class OpenContainerProcess extends LookProcess implements ChestHelper{
 
     /**
      *
@@ -31,26 +32,31 @@ public class OpenContainerProcess extends ReturnProcess {
      */
 
     public OpenContainerProcess(BlockPos blockCoords, SubProcess nextProcess) {
-        super(nextProcess);
+        super(blockCoords, 2, nextProcess);
     }
 
     @Override
     public boolean isFinished() {
+        logDirect("");
         return isChestOpen(ctx);
     }
 
-    private boolean isChestOpen(IPlayerContext ctx) {
 
-    }
 
     @Override
     public void doTick(){
+        // super is adjusting the rotation
+        super.doTick();
+
+        // there was no other check in original but can you be sure we don't need any check here?
+        rightClick(ctx.objectMouseOver());
+
 
     }
 
-    @Override
-    public PathingCommand generateReturn() {
-        return null;
+    private void rightClick(RayTraceResult trace) {
+        ctx.playerController().processRightClickBlock(ctx.player(), ctx.world(), nearGoal, trace.sideHit, trace.hitVec, EnumHand.OFF_HAND);
     }
+
 
 }
