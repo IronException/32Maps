@@ -39,8 +39,7 @@ public class LookProcess extends GoalNearProcess {
 
     @Override
     public void doTick(){
-        logDirect("look now");
-        Optional<Rotation> newRotation = RotationUtils.reachable(ctx, nearGoal); //getRotationForChest(target); // may be aiming at different chest than targetPos but thats fine
+        Optional<Rotation> newRotation = RotationUtils.reachable(ctx, nearGoal);
         newRotation.ifPresent(rotation -> {
             baritone.getLookBehavior().updateTarget(rotation, true);
         });
