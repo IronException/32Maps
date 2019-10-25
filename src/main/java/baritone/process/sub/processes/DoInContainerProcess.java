@@ -32,6 +32,11 @@ public class DoInContainerProcess extends SubProcess implements ChestHelper {
     }
 
 
+    @Override
+    public boolean finished() {
+        logDirect(isFinished() + " " + nextProcess.finished());
+        return isFinished() && nextProcess.finished();
+}
 
     @Override
     public boolean isFinished() {
@@ -45,11 +50,14 @@ public class DoInContainerProcess extends SubProcess implements ChestHelper {
      * so basically this class is only closing the chest lol
      *
      */
+    @Override
     public void tick() {
-        if(nextProcess.isFinished())
+        if(nextProcess.finished())
             doTick();
-        else
+        else{
             nextProcess.tick();
+        }
+
     }
 
     @Override

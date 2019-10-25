@@ -37,7 +37,6 @@ public class OpenContainerProcess extends LookProcess implements ChestHelper{
 
     @Override
     public boolean isFinished() {
-        logDirect("");
         return isChestOpen(ctx);
     }
 

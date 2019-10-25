@@ -19,11 +19,14 @@ package baritone.process.sub.processes;
 
 import baritone.api.utils.IPlayerContext;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.ContainerShulkerBox;
 
 public interface ChestHelper {
 
     default boolean isChestOpen(IPlayerContext ctx) {
-        return ctx.player().openContainer instanceof Container;
+        Container toComp = ctx.player().openContainer; // TODO add all other container types
+        return toComp instanceof ContainerChest || toComp instanceof ContainerShulkerBox;
     }
 
 }
