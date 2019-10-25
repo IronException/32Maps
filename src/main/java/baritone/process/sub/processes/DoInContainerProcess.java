@@ -19,55 +19,34 @@ package baritone.process.sub.processes;
 
 import net.minecraft.util.math.BlockPos;
 
-public class DoInContainerProcess extends SubProcess implements ChestHelper {
+public class DoInContainerProcess extends LookProcess {
 
     /**
     // IMPORTANT: this opens and closes the chest and only then finishes
      also for understanding: this class is basically only closing the chest again
     */
-    public DoInContainerProcess(BlockPos chestCoords, SubProcess doInChest) {
-        super(new OpenContainerProcess(chestCoords, doInChest));
+    public DoInContainerProcess(BlockPos chestCoords, SubProcess doInChest, SubProcess nextProcess) {
+        super(chestCoords, 2, new MultiProcess(new SubProcess[]{
+                new OpenContainerProcess(chestCoords, doInChest),
+                new SubProcess(nextProcess) {
+
+                    @Override
+                    public boolean isFinished() {
+                        logDirect("chest open: " + ChestHelper.isChestOpen(ctx));
+                        return !ChestHelper.isChestOpen(ctx);
+                    }
+
+                    @Override
+                    public void doTick() {
+                        logDirect("close");
+                        ctx.player().closeScreenAndDropStack();
+                    }
+                }
+
+        }));
 
         // only finishes when chest is closed.
     }
-
-
-    @Override
-    public boolean finished() {
-        logDirect(isFinished() + " " + nextProcess.finished());
-        return isFinished() && nextProcess.finished();
-}
-
-    @Override
-    public boolean isFinished() {
-        return !isChestOpen(ctx);
-    }
-
-    /**
-     * this might complicate things but I cant think of an easier way. We first do the next processes (cuz opening is there too...)
-     * and this process is rather to close the chest again... So yea tick() has to be overwritten...
-     *
-     * so basically this class is only closing the chest lol
-     *
-     */
-    @Override
-    public void tick() {
-        if(nextProcess.finished())
-            doTick();
-        else{
-            nextProcess.tick();
-        }
-
-    }
-
-    @Override
-    public void doTick() {
-        ctx.player().closeScreenAndDropStack();
-    }
-
-
-
-    // TODO is getReturn a problem || has to be overwritten? because it calles isFinished...
 
 
 }

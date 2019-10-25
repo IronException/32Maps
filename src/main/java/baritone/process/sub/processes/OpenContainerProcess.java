@@ -22,7 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 
 
-public class OpenContainerProcess extends LookProcess implements ChestHelper{
+public class OpenContainerProcess extends LookProcess {
 
     /**
      *
@@ -37,7 +37,7 @@ public class OpenContainerProcess extends LookProcess implements ChestHelper{
 
     @Override
     public boolean isFinished() {
-        return isChestOpen(ctx);
+        return ChestHelper.isChestOpen(ctx);
     }
 
 
