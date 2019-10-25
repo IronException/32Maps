@@ -32,14 +32,14 @@ public class DoInContainerProcess extends LookProcess {
 
                     @Override
                     public boolean isFinished() {
-                        logDirect("chest open: " + ChestHelper.isChestOpen(ctx));
+                        //logDirect("chest open: " + ChestHelper.isChestOpen(ctx));
                         return !ChestHelper.isChestOpen(ctx);
                     }
 
                     @Override
                     public void doTick() {
-                        logDirect("close");
-                        ctx.player().closeScreenAndDropStack();
+                        // logDirect("close");
+                        //ctx.player().closeScreenAndDropStack();
                     }
                 }
 
