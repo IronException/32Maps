@@ -39,7 +39,8 @@ public class DoInContainerProcess extends LookProcess {
                     @Override
                     public void doTick() {
                         // logDirect("close");
-                        //ctx.player().closeScreenAndDropStack();
+                        if(!isFinished())
+                          ctx.player().closeScreenAndDropStack();
                     }
                 }
 
