@@ -27,6 +27,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 public abstract class SubProcess implements Helper { // TODO remove in the end
 
     protected SubProcess nextProcess;
+    protected boolean onceFinished;
 
     protected ChestSortProcess parent;
     protected Baritone baritone;
@@ -40,12 +41,23 @@ public abstract class SubProcess implements Helper { // TODO remove in the end
         this.baritone = this.parent.baritone;
         this.ctx = this.parent.ctx;
         this.player = this.ctx.player();
+        
+        this.onceFinished = false;
     }
 
     public abstract boolean isFinished();
+    
+    public void testFinished() {
+        this.onceFinished = this.onceFinished || this.isFinished();
+    }
 
+    public boolean onceFinished() {
+        return onceFinished;
+    }
+    
     public boolean finished() {
-        return isFinished() && nextProcess.finished();
+        this.testFinished();
+        return onceFinished() && nextProcess.finished();
     }
 
 
