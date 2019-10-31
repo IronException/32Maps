@@ -17,6 +17,11 @@
 
 package baritone.process.sub.processes;
 
+public static final int HOTBAR = 0;
+public static final int INVENTORY = 1;
+public static final int NORMAL_CHEST = 2;
+public static final int DOUBLE_CHEST = 3;
+
 /**
  * you need to have your inventory open for this to work
  */
@@ -32,6 +37,13 @@ public class SwapSlots extends SubProcess {
     
     this.slot1 = slot1;
     this.slot2 = slot2;
+  }
+
+  /**
+   * typeAs before slot might confuse things but maybe its also easier to read?
+   */
+  public static int getAsSlotIn(int typeAs, int slot, int typeIn) {
+    return (typeIn - typeAs) * 27 + slot;
   }
 
   /**
