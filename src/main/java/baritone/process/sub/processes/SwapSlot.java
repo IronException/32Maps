@@ -22,7 +22,7 @@ import net.minecraft.inventory.ClickType;
 /**
  * you need to have your inventory open for this to work
  */
-public class SwapSlots extends SubProcess {
+public class SwapSlot extends SubProcess {
   
   public static final int HOTBAR = 0;
   public static final int INVENTORY = 1;
@@ -33,7 +33,7 @@ public class SwapSlots extends SubProcess {
   protected int phase;
   protected int slot1, slot2;
   
-  public SwapSlots(int slot1, int slot2, SubProcess nextProcess) {
+  public SwapSlot(int slot1, int slot2, SubProcess nextProcess) {
     super(nextProcess);
     
     this.phase = 0;
