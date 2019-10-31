@@ -17,16 +17,17 @@
 
 package baritone.process.sub.processes;
 
-public static final int HOTBAR = 0;
-public static final int INVENTORY = 1;
-public static final int NORMAL_CHEST = 2;
-public static final int DOUBLE_CHEST = 3;
-
 /**
  * you need to have your inventory open for this to work
  */
 public class SwapSlots extends SubProcess {
   
+  public static final int HOTBAR = 0;
+  public static final int INVENTORY = 1;
+  public static final int NORMAL_CHEST = 2;
+  public static final int DOUBLE_CHEST = 3;
+
+
   protected int phase;
   protected int slot1, slot2;
   
