@@ -17,5 +17,49 @@
 
 package baritone.process.sub.processes;
 
-public class SwapSlots {
+/**
+ * you need to have your inventory open for this to work
+ */
+public class SwapSlots extends SubProcess {
+  
+  protected int phase;
+  protected int slot1, slot2;
+  
+  public SwapSlot(int slot1, int slot2, SubProcess nextProcess) {
+    super(nextProcess);
+    
+    this.phase = 0;
+    
+    this.slot1 = slot1;
+    this.slot2 = slot2;
+  }
+
+  /**
+   * we are done after phase 2
+   */
+  @Override
+  public boolean isFinished() {
+    return this.phase > 2;
+  }
+
+  @Override
+  public void doTick() {
+    swap(phase) {
+      case 0:
+        this.pressSlot(this.slot1);
+        break;
+      case 1:
+        this.pressSlot(this.slot2);
+        break;
+      case 2:
+        this.pressSlot(this.slot1);
+        break;
+    }
+    phase ++;
+  }
+
+  protected void pressSlot(int slot) {
+    super.ctx.playerController().windowClick(super.ctx.player().openContainer.windowId, slot, 0, ClickType.PICKUP, super.ctx.player());
+  }
+  
 }
