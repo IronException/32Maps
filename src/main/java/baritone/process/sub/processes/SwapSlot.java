@@ -33,6 +33,10 @@ public class SwapSlot extends SubProcess {
   protected int phase;
   protected int slot1, slot2;
   
+  public SwapSlot(int type1, int slot1, int type2, int slot2, int typeIn, SubProcess nextProcess) {
+    this(getAsSlotIn(type1, slot1, typeIn), getAtSlotIn(type2, slot2, typeIn), nextProcess);
+  }
+
   public SwapSlot(int slot1, int slot2, SubProcess nextProcess) {
     super(nextProcess);
     
