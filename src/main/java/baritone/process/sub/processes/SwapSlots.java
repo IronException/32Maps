@@ -25,7 +25,10 @@ import net.minecraft.inventory.ClickType;
 public class SwapSlots extends SubProcess {
   
   protected MultiProcess getNextProcess() {
-
+    SubProcess[] rV = new SubProcess[27];
+    for(int i = 0; i < rV.length; i ++)
+      rV[i] = new SwapSlot();
+    return new MultiProcess(rV);
   }
   
   public SwapSlots() {
