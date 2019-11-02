@@ -27,7 +27,7 @@ public class SwapSlots extends SubProcess {
   protected MultiProcess getNextProcess() {
     SubProcess[] rV = new SubProcess[27];
     for(int i = 0; i < rV.length; i ++)
-      rV[i] = new SwapSlot();
+      rV[i] = new SwapSlot(SwapSlot.CHEST, i, SwapSlot.INVENTORY, i, SwapSlot.CHEST, new Epsilon());
     return new MultiProcess(rV);
   }
   
