@@ -24,55 +24,12 @@ import net.minecraft.inventory.ClickType;
  */
 public class SwapSlots extends SubProcess {
   
-  public static final int HOTBAR = 0;
-  public static final int INVENTORY = 1;
-  public static final int NORMAL_CHEST = 2;
-  public static final int DOUBLE_CHEST = 3;
+  protected MultiProcess getNextProcess() {
 
-
-  protected int phase;
-  protected int slot1, slot2;
-  
-  public SwapSlots(int slot1, int slot2, SubProcess nextProcess) {
-    super(nextProcess);
-    
-    this.phase = 0;
-    
-    this.slot1 = slot1;
-    this.slot2 = slot2;
-  }
-
-  /**
-   * typeAs before slot might confuse things but maybe its also easier to read?
-   */
-  public static int getAsSlotIn(int typeAs, int slot, int typeIn) {
-    return (typeIn - typeAs) * 27 + slot;
-  }
-
-  /**
-   * we are done after phase 2
-   */
-  @Override
-  public boolean isFinished() {
-    return this.phase > 2;
-  }
-
-  @Override
-  public void doTick() {
-    switch (phase) {
-      case 0:
-      case 2:
-        this.pressSlot(this.slot1);
-        break;
-      case 1:
-        this.pressSlot(this.slot2);
-        break;
-    }
-    phase ++;
-  }
-
-  protected void pressSlot(int slot) {
-    super.ctx.playerController().windowClick(super.ctx.player().openContainer.windowId, slot, 0, ClickType.PICKUP, super.ctx.player());
   }
   
+  public SwapSlots() {
+    super(getNextProcess());
+  }
+
 }
