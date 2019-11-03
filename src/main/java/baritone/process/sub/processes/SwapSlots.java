@@ -24,10 +24,10 @@ import net.minecraft.inventory.ClickType;
  */
 public class SwapSlots extends SubProcess {
   
-  protected MultiProcess getNextProcess() {
+  protected static MultiProcess getNextProcess() {
     SubProcess[] rV = new SubProcess[27];
     for(int i = 0; i < rV.length; i ++)
-      rV[i] = new SwapSlot(SwapSlot.CHEST, i, SwapSlot.INVENTORY, i, SwapSlot.CHEST, new Epsilon());
+      rV[i] = new SwapSlot(SwapSlot.NORMAL_CHEST, i, SwapSlot.INVENTORY, i, SwapSlot.NORMAL_CHEST, new Epsilon());
     return new MultiProcess(rV);
   }
   
@@ -35,4 +35,13 @@ public class SwapSlots extends SubProcess {
     super(getNextProcess());
   }
 
+  @Override
+  public boolean isFinished() {
+    return true;
+  }
+
+  @Override
+  public void doTick() {
+
+  }
 }
