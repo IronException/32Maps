@@ -17,5 +17,19 @@
 
 package baritone.process.sub.processes;
 
-public class putMap {
+public class putMap extends SubProcess {
+
+    public putMap(SubProcess nextProcess) {
+        super(nextProcess);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+
+    @Override
+    public void doTick() {
+
+    }
 }
