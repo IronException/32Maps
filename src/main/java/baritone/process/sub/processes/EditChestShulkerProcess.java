@@ -23,12 +23,15 @@ package baritone.process.sub.processes;
 
 import net.minecraft.util.math.BlockPos;
 
-public class EditChestShulkerProcess extends SubProcess {
+public class EditChestShulkerProcess extends ForwardProcess {
+
+    protected static SubProcess getProcess(BlockPos chestCoords, SubProcess doInChest) {
+        return new Epsilon();
+    }
 
     public EditChestShulkerProcess(BlockPos chestCoords, SubProcess doInChest) {
-        super(
-new OpenContainerProcess(chestCoords,
-doInChest));
+        super(getProcess(chestCoords, doInChest);
+    }
 
 /*
 putShulkerProcess(chestCoords, chestSlot, hotbar, shulkerCoords, invSlot, shulkerSlot, bool putBack):
@@ -48,17 +51,5 @@ if putBack:
 -> open Chest
 -> swapSlot(hotbar, chestSlot)
 -> closeChest*/
-
-    }
-
-    @Override
-    public boolean isFinished() {
-        return true; // next process will be executed
-    }
-
-    @Override
-    public void doTick() {
-// dont need to do anything. its all in nextProcess
-    }
 
 }
