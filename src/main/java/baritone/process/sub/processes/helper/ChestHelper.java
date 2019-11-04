@@ -18,15 +18,32 @@
 package baritone.process.sub.processes.helper;
 
 import baritone.api.utils.IPlayerContext;
+import baritone.process.ChestSortProcess;
+import net.minecraft.client.player.inventory.ContainerLocalMenu;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.ContainerShulkerBox;
 
 public class ChestHelper {
 
-    public static boolean isChestOpen(IPlayerContext ctx) {
-        Container toComp = ctx.player().openContainer; // TODO add all other container types
-        return toComp instanceof ContainerChest || toComp instanceof ContainerShulkerBox;
+    public static Container getCurrentContainer(){
+        return ChestSortProcess.INSTANCE.ctx.player().openContainer;
+    }
+
+    public static boolean isChestOpen() {
+        // TODO add all other container types
+        return getCurrentContainer() instanceof ContainerChest || getCurrentContainer() instanceof ContainerShulkerBox;
+    }
+
+    public static ContainerType getContainer() {
+        // TODO when no container open.... ? + many other types ...
+        if (getCurrentContainer() instanceof ContainerChest || getCurrentContainer() instanceof ContainerShulkerBox)
+            return ContainerType.NORMAL_CHEST;
+        else if (getCurrentContainer() instanceof ContainerPlayer)
+            return ContainerType.INVENTORY;
+
+        return null;
     }
 
 }

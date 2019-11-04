@@ -18,6 +18,8 @@
 package baritone.process.sub.processes;
 
 
+import baritone.process.sub.processes.helper.ContainerType;
+import baritone.process.sub.processes.helper.SlotHelper;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -26,19 +28,20 @@ import net.minecraft.util.math.BlockPos;
 
 public class EditChestShulkerProcess extends ForwardProcess {
 
-    protected static SubProcess getProcess(BlockPos chestCoords, int chestSlot, int hotbarSlot, BlockPos placeShulker, SubProcess doInShulker) {
+    protected static SubProcess getProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, SubProcess nextProcess) {
         SubProcess swapInChest = new DoInContainerProcess(chestCoords,
-                                  new SwapSlot(chestSlot, hotbarSlot, new Epsilon()),// TODO hotbarSlot in swapslot != editShulkerProcess
+                                  new SwapSlot(chestSlot, hotbarSlot, new Epsilon()),
                                   new Epsilon());
         return new MultiProcess(new SubProcess[]{
                 swapInChest,
                 new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker),
-                swapInChest
+                swapInChest,
+                nextProcess
                });
     }
 
-    public EditChestShulkerProcess(BlockPos chestCoords, int chestSlot, int hotbarSlot, BlockPos placeShulker, SubProcess doInShulker) {
-        super(getProcess(chestCoords, chestSlot, hotbarSlot, placeShulker, doInShulker));
+    public EditChestShulkerProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, SubProcess nextProcess) {
+        super(getProcess(chestCoords, chestSlot, hotbarSlot, placeShulker, doInShulker, nextProcess));
     }
 
 }

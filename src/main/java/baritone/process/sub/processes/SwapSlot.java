@@ -17,40 +17,25 @@
 
 package baritone.process.sub.processes;
 
+import baritone.process.sub.processes.helper.ContainerType;
+import baritone.process.sub.processes.helper.SlotHelper;
 import net.minecraft.inventory.ClickType;
 
 /**
  * you need to have your inventory open for this to work
  */
 public class SwapSlot extends SubProcess {
-  
-  public static final int HOTBAR = 0;
-  public static final int INVENTORY = 1;
-  public static final int NORMAL_CHEST = 2;
-  public static final int DOUBLE_CHEST = 3;
-
 
   protected int phase;
-  protected int slot1, slot2;
-  
-  public SwapSlot(int type1, int slot1, int type2, int slot2, int typeIn, SubProcess nextProcess) {
-    this(getAsSlotIn(type1, slot1, typeIn), getAsSlotIn(type2, slot2, typeIn), nextProcess);
-  }
+  protected SlotHelper slot1, slot2;
 
-  public SwapSlot(int slot1, int slot2, SubProcess nextProcess) {
+  public SwapSlot(SlotHelper slot1, SlotHelper slot2, SubProcess nextProcess) {
     super(nextProcess);
     
     this.phase = 0;
     
     this.slot1 = slot1;
     this.slot2 = slot2;
-  }
-
-  /**
-   * typeAs before slot might confuse things but maybe its also easier to read?
-   */
-  public static int getAsSlotIn(int typeAs, int slot, int typeIn) {
-    return (typeIn - typeAs) * 27 + slot;
   }
 
   /**
@@ -73,6 +58,10 @@ public class SwapSlot extends SubProcess {
         break;
     }
     phase ++;
+  }
+
+  protected void pressSlot(SlotHelper slot) {
+    this.pressSlot(slot.getSlotNow());
   }
 
   protected void pressSlot(int slot) {

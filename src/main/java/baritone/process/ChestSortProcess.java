@@ -24,6 +24,8 @@ import baritone.api.process.IChestSortProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.process.sub.processes.*;
+import baritone.process.sub.processes.helper.ContainerType;
+import baritone.process.sub.processes.helper.SlotHelper;
 import baritone.utils.BaritoneProcessHelper;
 import net.minecraft.util.math.BlockPos;
 
@@ -62,7 +64,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         return
                 new ChatProcess("start",
-                        new DoInContainerProcess(targetPos,
+                        new EditChestShulkerProcess(targetPos, new SlotHelper(0, ContainerType.NORMAL_CHEST), new SlotHelper(2, ContainerType.HOTBAR), shulkerPos,
                                 new ChatProcess("in chest",
                                         new SwapSlots()),
                                 new ChatProcess("end", new Epsilon())));

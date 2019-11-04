@@ -1,4 +1,3 @@
-
 /*
  * This file is part of Baritone.
  *
@@ -18,25 +17,17 @@
 
 package baritone.process.sub.processes.helper;
 
+public enum ContainerType {
+    DOUBLE_CHEST(2 * 27), NORMAL_CHEST(27), INVENTORY(27), HOTBAR(0);
 
-public class SlotHelper {
+    protected int slots;
 
-    protected int slot;
-    protected ContainerType as;
-
-    public SlotHelper(int slot, ContainerType as) {
-        this.slot = slot;
-        this.as = as;
+    private ContainerType(int slots){
+        this.slots = slots;
     }
 
-    public int getSlotNow() {
-        return getSlotIn(ChestHelper.getContainer());
+    public int getSlots(){
+        return this.slots;
     }
-
-    public int getSlotIn(ContainerType in) {
-        return in.getSlots() - as.getSlots() + this.slot;
-    }
-
 
 }
-

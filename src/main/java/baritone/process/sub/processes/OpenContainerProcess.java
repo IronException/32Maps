@@ -38,7 +38,7 @@ public class OpenContainerProcess extends LookProcess {
 
     @Override
     public boolean isFinished() {
-        return ChestHelper.isChestOpen(ctx);
+        return ChestHelper.isChestOpen();
     }
 
 

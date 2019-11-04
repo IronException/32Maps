@@ -19,6 +19,7 @@
 package baritone.process.sub.processes;
 
 
+import baritone.process.sub.processes.helper.SlotHelper;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -27,14 +28,14 @@ import net.minecraft.util.math.BlockPos;
 
 public class EditShulkerProcess extends ForwardProcess {
 
-    protected static SubProcess getProcess(BlockPos placeCoords, int hotbarSlot, SubProcess doInShulker) {
+    protected static SubProcess getProcess(BlockPos placeCoords, SlotHelper hotbarSlot, SubProcess doInShulker) {
         return new PlaceBlock(placeCoords, hotbarSlot, 
                 new DoInContainerProcess(placeCoords, doInShulker,
                  new BreakBlock(placeCoords, 
                   new Epsilon())));
     }
 
-    public EditShulkerProcess(BlockPos placeCoords, int hotbarSlot, SubProcess doInShulker) {
+    public EditShulkerProcess(BlockPos placeCoords, SlotHelper hotbarSlot, SubProcess doInShulker) {
         super(getProcess(placeCoords, hotbarSlot, doInShulker));
     }
 

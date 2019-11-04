@@ -17,6 +17,8 @@
 
 package baritone.process.sub.processes;
 
+import baritone.process.sub.processes.helper.ContainerType;
+import baritone.process.sub.processes.helper.SlotHelper;
 import net.minecraft.inventory.ClickType;
 
 /**
@@ -27,7 +29,7 @@ public class SwapSlots extends SubProcess {
   protected static MultiProcess getNextProcess() {
     SubProcess[] rV = new SubProcess[27];
     for(int i = 0; i < rV.length; i ++)
-      rV[i] = new SwapSlot(SwapSlot.NORMAL_CHEST, i, SwapSlot.INVENTORY, i, SwapSlot.NORMAL_CHEST, new Epsilon());
+      rV[i] = new SwapSlot(new SlotHelper(i, ContainerType.NORMAL_CHEST), new SlotHelper(i, ContainerType.INVENTORY), new Epsilon());
     return new MultiProcess(rV);
   }
   

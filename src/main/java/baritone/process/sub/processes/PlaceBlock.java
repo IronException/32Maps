@@ -17,12 +17,11 @@
 
 package baritone.process.sub.processes;
 
-import baritone.api.pathing.goals.GoalBlock;
-import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
 import baritone.api.utils.input.Input;
+import baritone.process.sub.processes.helper.ContainerType;
+import baritone.process.sub.processes.helper.SlotHelper;
 import baritone.utils.BlockStateInterface;
 import net.minecraft.block.BlockAir;
 import net.minecraft.util.math.BlockPos;
@@ -32,9 +31,9 @@ import java.util.Optional;
 
 public class PlaceBlock extends GoalNearProcess {
 
-    private int hotbar;
+    private SlotHelper hotbar;
 
-    public PlaceBlock(BlockPos nearGoal, int hotbar, SubProcess nextProcess) {
+    public PlaceBlock(BlockPos nearGoal, SlotHelper hotbar, SubProcess nextProcess) {
         super(nearGoal, 2, new OneTimeCommand(nextProcess) {
 
             @Override
@@ -63,7 +62,7 @@ public class PlaceBlock extends GoalNearProcess {
             baritone.getLookBehavior().updateTarget(rot.get(), true);
             if (ctx.isLookingAt(super.nearGoal.down())) {
 
-                ctx.player().inventory.currentItem = this.hotbar;
+                ctx.player().inventory.currentItem = this.hotbar.getSlotIn(ContainerType.HOTBAR);
                 baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_RIGHT, true);
             }
 
