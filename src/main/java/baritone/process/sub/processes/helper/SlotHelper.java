@@ -16,7 +16,7 @@
  * along with Baritone.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package baritone.process.sub.processes;
+package baritone.process.sub.processes.helper;
 
 
 public class SlotHelper {
@@ -31,6 +31,7 @@ public class SlotHelper {
     
     public int getSlotIn(Enum in) {
         // TODO
+        return this.slot;
     }
 
 }

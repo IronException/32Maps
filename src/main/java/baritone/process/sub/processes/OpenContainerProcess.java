@@ -17,6 +17,7 @@
 
 package baritone.process.sub.processes;
 
+import baritone.process.sub.processes.helper.ChestHelper;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;

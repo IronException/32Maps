@@ -32,11 +32,10 @@ public class EditShulkerProcess extends ForwardProcess {
                 new DoInContainerProcess(placeCoords, doInShulker,
                  new BreakBlock(placeCoords, 
                   new Epsilon())));
-        );
     }
 
     public EditShulkerProcess(BlockPos placeCoords, int hotbarSlot, SubProcess doInShulker) {
-        super(getProcess(placeCoords, hotbarSlot, doInChest);
+        super(getProcess(placeCoords, hotbarSlot, doInShulker));
     }
 
 }

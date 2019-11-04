@@ -17,6 +17,7 @@
 
 package baritone.process.sub.processes;
 
+import baritone.process.sub.processes.helper.ChestHelper;
 import net.minecraft.util.math.BlockPos;
 
 public class DoInContainerProcess extends LookProcess {

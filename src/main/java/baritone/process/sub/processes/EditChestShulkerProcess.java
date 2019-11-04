@@ -27,18 +27,18 @@ import net.minecraft.util.math.BlockPos;
 public class EditChestShulkerProcess extends ForwardProcess {
 
     protected static SubProcess getProcess(BlockPos chestCoords, int chestSlot, int hotbarSlot, BlockPos placeShulker, SubProcess doInShulker) {
-        SubProcess swapInChest = new DoInContainer(chestCoords, 
+        SubProcess swapInChest = new DoInContainerProcess(chestCoords,
                                   new SwapSlot(chestSlot, hotbarSlot, new Epsilon()),// TODO hotbarSlot in swapslot != editShulkerProcess
                                   new Epsilon());
         return new MultiProcess(new SubProcess[]{
                 swapInChest,
-                new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker)),
+                new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker),
                 swapInChest
                });
     }
 
     public EditChestShulkerProcess(BlockPos chestCoords, int chestSlot, int hotbarSlot, BlockPos placeShulker, SubProcess doInShulker) {
-        super(getProcess(chestCoords, chestSlot, hotbarSlot, placeShulker, doInShulker);
+        super(getProcess(chestCoords, chestSlot, hotbarSlot, placeShulker, doInShulker));
     }
 
 }

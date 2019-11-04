@@ -15,7 +15,7 @@
  * along with Baritone.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package baritone.process.sub.processes;
+package baritone.process.sub.processes.helper;
 
 import baritone.api.utils.IPlayerContext;
 import net.minecraft.inventory.Container;
