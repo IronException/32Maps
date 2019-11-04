@@ -20,33 +20,25 @@ package baritone.process.sub.processes;
 
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * open chest, takes shulker out, places it and does whatever you tell him in shulker, then puts shulker back
+ */
+
 public class EditChestShulkerProcess extends ForwardProcess {
 
-    protected static SubProcess getProcess(BlockPos chestCoords, SubProcess doInChest) {
-        return doInChest(swapSlots()), EditShulkerProcesss(place shulk, doInContainer(what todo), break shulk), doInChest(swapSlots back);
+    protected static SubProcess getProcess(BlockPos chestCoords, int chestSlot, int hotbarSlot, BlockPos placeShulker, SubProcess doInShulker) {
+        SubProcess swapInChest = new DoInContainer(chestCoords, 
+                                  new SwapSlot(chestSlot, hotbarSlot, new Epsilon()),// TODO hotbarSlot in swapslot != editShulkerProcess
+                                  new Epsilon());
+        return new MultiProcess(new SubProcess[]{
+                swapInChest,
+                new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker)),
+                swapInChest
+               });
     }
 
-    public EditChestShulkerProcess(BlockPos chestCoords, SubProcess doInChest) {
-        super(getProcess(chestCoords, doInChest);
+    public EditChestShulkerProcess(BlockPos chestCoords, int chestSlot, int hotbarSlot, BlockPos placeShulker, SubProcess doInShulker) {
+        super(getProcess(chestCoords, chestSlot, hotbarSlot, placeShulker, doInShulker);
     }
-
-/*
-putShulkerProcess(chestCoords, chestSlot, hotbar, shulkerCoords, invSlot, shulkerSlot, bool putBack):
--> goto chestCoords
--> openChest
--> swapSlots(chestSlot, hotbar)
--> closeChest
--> goto shulkerCoords
--> place shulker
--> openShulker
--> swapSlot(invSlot, shulkerSlot)
--> closeShulker
--> breakShulker
-if putBack:
--> pick up
--> goto chestCoords
--> open Chest
--> swapSlot(hotbar, chestSlot)
--> closeChest*/
 
 }
