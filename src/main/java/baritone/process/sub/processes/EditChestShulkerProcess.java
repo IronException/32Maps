@@ -18,15 +18,12 @@
 package baritone.process.sub.processes;
 
 
-
-
-
 import net.minecraft.util.math.BlockPos;
 
 public class EditChestShulkerProcess extends ForwardProcess {
 
     protected static SubProcess getProcess(BlockPos chestCoords, SubProcess doInChest) {
-        return new Epsilon();
+        return doInChest(swapSlots()), EditShulkerProcesss(place shulk, doInContainer(what todo), break shulk), doInChest(swapSlots back);
     }
 
     public EditChestShulkerProcess(BlockPos chestCoords, SubProcess doInChest) {
