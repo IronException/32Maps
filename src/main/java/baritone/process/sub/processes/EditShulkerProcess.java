@@ -21,6 +21,10 @@ package baritone.process.sub.processes;
 
 import net.minecraft.util.math.BlockPos;
 
+/**
+ places a shulker and opens it to do what you tell him
+ */
+
 public class EditShulkerProcess extends ForwardProcess {
 
     protected static SubProcess getProcess(BlockPos placeCoords, int hotbarSlot, SubProcess doInShulker) {
