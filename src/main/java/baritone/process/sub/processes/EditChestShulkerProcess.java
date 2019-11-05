@@ -18,7 +18,6 @@
 package baritone.process.sub.processes;
 
 
-import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotHelper;
 import net.minecraft.util.math.BlockPos;
 
@@ -28,14 +27,17 @@ import net.minecraft.util.math.BlockPos;
 
 public class EditChestShulkerProcess extends ForwardProcess {
 
+    protected static SubProcess getSwapInChest(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot){
+        return new DoInContainerProcess(chestCoords,
+                new SwapSlot(chestSlot, hotbarSlot, new Epsilon()),
+                new Epsilon());
+    }
+
     protected static SubProcess getProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, SubProcess nextProcess) {
-        SubProcess swapInChest = new DoInContainerProcess(chestCoords,
-                                  new SwapSlot(chestSlot, hotbarSlot, new Epsilon()),
-                                  new Epsilon());
         return new MultiProcess(new SubProcess[]{
-                swapInChest,
+                getSwapInChest(chestCoords, chestSlot, hotbarSlot),
                 new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker),
-                swapInChest,
+                getSwapInChest(chestCoords, chestSlot, hotbarSlot),
                 nextProcess
                });
     }
