@@ -36,10 +36,9 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public static BlockPos putMaps = new BlockPos(5, 5, 0);
     public static int addX = 0;
     public static int addZ = 2;
-    public static int hotbarSlot = 5;
+    public static SlotHelper hotbarSlot = new SlotHelper(5, ContainerType.HOTBAR);
 
     public static BlockPos shulkerPos = new BlockPos(-10, 4, 10);
-
 
 
     private boolean active = false;
@@ -55,19 +54,18 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     }
 
 
-    public SubProcess getProcessBuild(){
+    public SubProcess getProcessBuild() {
         /*return new GoalNearProcess(targetPos, 2,
                 new EditChestShulkerProcess(targetPos, new Epsilon())
         ); // TODO its going to the same pos twice like this. so redo that....
         */
 
 
-        return
-                new ChatProcess("start",
-                        new EditChestShulkerProcess(targetPos, new SlotHelper(0, ContainerType.NORMAL_CHEST), new SlotHelper(2, ContainerType.HOTBAR), shulkerPos,
-                                new ChatProcess("in chest",
-                                        new SwapSlots()),
-                                new ChatProcess("end", new Epsilon())));
+        return new ChatProcess("start",
+                new EditShulkerProcess(shulkerPos, hotbarSlot, //new EditChestShulkerProcess(targetPos, new SlotHelper(0, ContainerType.NORMAL_CHEST), hotbarSlot, shulkerPos,
+                        new ChatProcess("in chest",
+                                new SwapSlots()),
+                        new ChatProcess("end", new Epsilon())));
 
     }
 
@@ -84,12 +82,11 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     }
 
 
-
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         // test wether maps in inv
 
-        if(this.process.finished())
+        if (this.process.finished())
             this.active = false;
 
 
@@ -98,13 +95,12 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         PathingCommand rV = process.getReturn();
         if (rV == null) {
-            logDirect("No SubProcess returned a PathingCommand. THIS HAS TO BE FIXED");
+            //logDirect("No SubProcess returned a PathingCommand. THIS HAS TO BE FIXED");
             // could also be Request Pause
             rV = new PathingCommand(new GoalBlock(ctx.playerFeet()), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
         }
         return rV;
     }
-
 
 
     @Override
@@ -119,7 +115,6 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public String displayName0() {
         return "ChestSortProcess";
     }
-
 
 
 }
