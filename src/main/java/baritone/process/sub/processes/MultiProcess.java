@@ -19,6 +19,8 @@ package baritone.process.sub.processes;
 
 import baritone.api.process.PathingCommand;
 
+import java.nio.file.Path;
+
 public class MultiProcess extends SubProcess {
 
     protected SubProcess process;
@@ -43,18 +45,28 @@ public class MultiProcess extends SubProcess {
         this.process.tick();
     }
 
-
     @Override
     public PathingCommand getReturn(){
         return this.process.getReturn();
     }
 
+    @Override
+    public PathingCommand getReturn(PathingCommand alt) {
+        return this.process.getReturn(alt);
+    }
 
-
+    /**
+     * this is recursivly pushing the tasks to the next multiProcess.
+     * Each MultiProcess takes the first process to handle it and gives the rest as a new MultiProcess as nextProcess to super
+     * if there is nothing left the process is just Epsilon
+     * @param in
+     * @return
+     */
     private static SubProcess extractNextProcess(SubProcess[] in){
         if(in.length < 1) // < 2 because index 0 is handled in this instance and next one wouldnt have anything anymore
             return new Epsilon();
 
+        // removing the first process to give the rest to super
         SubProcess[] rV = new SubProcess[in.length - 1];
         for (int i = 0; i < rV.length; i++) {
             rV[i] = in[i + 1];
