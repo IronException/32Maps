@@ -57,14 +57,14 @@ public abstract class SubProcess implements Helper { // TODO remove in the end
     
     public boolean finished() {
         this.testFinished();
-        return onceFinished() && nextProcess.finished();
+        return this.onceFinished() && nextProcess.finished();
     }
 
 
     public abstract void doTick();
 
     public void tick() {
-        if (isFinished())
+        if (onceFinished())
             nextProcess.tick();
         else
             doTick();
