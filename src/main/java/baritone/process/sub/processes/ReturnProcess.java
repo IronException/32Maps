@@ -39,7 +39,7 @@ public abstract class ReturnProcess extends SubProcess {
     @Override
     public PathingCommand getReturn() {
         PathingCommand rV = this.generateReturn();
-        return isFinished() ? nextProcess.getReturn(rV) : rV;
+        return this.onceFinished() ? nextProcess.getReturn(rV) : rV;
     }
 
     @Override

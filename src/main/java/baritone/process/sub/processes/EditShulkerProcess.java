@@ -23,18 +23,16 @@ import baritone.process.sub.processes.helper.SlotHelper;
 import net.minecraft.util.math.BlockPos;
 
 /**
- places a shulker and opens it to do what you tell him
+ * places a shulker and opens it to do what you tell him
  */
 
 public class EditShulkerProcess extends ForwardProcess {
 
     protected static SubProcess getProcess(BlockPos placeCoords, SlotHelper hotbarSlot, SubProcess doInShulker, SubProcess nextProcess) {
-        return new PlaceBlock(placeCoords, hotbarSlot, 
+        return new PlaceBlock(placeCoords, hotbarSlot,
                 new DoInContainerProcess(placeCoords, doInShulker,
-                 new ChatProcess("will break next",
                         new BreakBlock(placeCoords,
-                  new ChatProcess("broke block",
-                  nextProcess)))));
+                                nextProcess)));
     }
 
     public EditShulkerProcess(BlockPos placeCoords, SlotHelper hotbarSlot, SubProcess doInShulker, SubProcess nextProcess) {

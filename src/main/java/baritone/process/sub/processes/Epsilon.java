@@ -32,7 +32,7 @@ public class Epsilon extends SubProcess {
 
     @Override
     public boolean finished(){
-        return isFinished();
+        return onceFinished();
     }
 
     @Override

@@ -27,7 +27,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class EditChestShulkerProcess extends ForwardProcess {
 
-    protected static SubProcess getSwapInChest(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot){
+    protected static SubProcess getSwapInChest(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot) {
         return new DoInContainerProcess(chestCoords,
                 new SwapSlot(chestSlot, hotbarSlot, new Epsilon()),
                 new Epsilon());
@@ -36,10 +36,11 @@ public class EditChestShulkerProcess extends ForwardProcess {
     protected static SubProcess getProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, SubProcess nextProcess) {
         return new MultiProcess(new SubProcess[]{
                 getSwapInChest(chestCoords, chestSlot, hotbarSlot),
-                new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker),
+                new ChatProcess("now what?", new Epsilon()),
+                new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker, new Epsilon()),
                 getSwapInChest(chestCoords, chestSlot, hotbarSlot),
                 nextProcess
-               });
+        });
     }
 
     public EditChestShulkerProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, SubProcess nextProcess) {
