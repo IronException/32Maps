@@ -32,7 +32,7 @@ public abstract class OneTimeCommand extends SubProcess {
     }
 
     public void tick() {
-        if (isFinished())
+        if (onceFinished())
             nextProcess.tick();
         else {
             doTick();

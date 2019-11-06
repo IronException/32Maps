@@ -38,7 +38,7 @@ public class DoInContainerProcess extends LookProcess {
 
                     @Override
                     public void doTick() {
-                        if(!isFinished())
+                        if(ChestHelper.isChestOpen())
                           ctx.player().closeScreenAndDropStack();
                     }
                 }
