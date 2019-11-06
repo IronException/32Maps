@@ -18,7 +18,7 @@
 package baritone.process.sub.processes.helper;
 
 public enum ContainerType {
-    DOUBLE_CHEST(2 * 27), NORMAL_CHEST(27), INVENTORY(27), HOTBAR(0);
+    DOUBLE_CHEST(3 * 27), NORMAL_CHEST(2 * 27), INVENTORY(27), HOTBAR(0);
 
     protected int slots;
 
