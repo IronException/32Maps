@@ -33,18 +33,35 @@ public class EditChestShulkerProcess extends ForwardProcess {
                 new Epsilon());
     }
 
-    protected static SubProcess getProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, SubProcess nextProcess) {
-        return new MultiProcess(new SubProcess[]{
+    protected static SubProcess getProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, boolean putBack, SubProcess nextProcess) {
+        SubProcess[] rV = new SubProcess[]{
                 getSwapInChest(chestCoords, chestSlot, hotbarSlot),
                 new ChatProcess("now what?", new Epsilon()),
                 new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker, new Epsilon()),
+                // TODO pick up the dropped item...
                 getSwapInChest(chestCoords, chestSlot, hotbarSlot),
                 nextProcess
-        });
+        };
+        if(!putBack)
+            rV[3] = new Epsilon();
+        return new MultiProcess(rV);
     }
 
+    /**
+     * puts the shulker back ovsly. I mean why wouldnt you?
+     * @param chestCoords
+     * @param chestSlot
+     * @param hotbarSlot
+     * @param placeShulker
+     * @param doInShulker
+     * @param nextProcess
+     */
     public EditChestShulkerProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, SubProcess nextProcess) {
-        super(getProcess(chestCoords, chestSlot, hotbarSlot, placeShulker, doInShulker, nextProcess));
+        this(chestCoords, chestSlot, hotbarSlot, placeShulker, doInShulker, true, nextProcess);
+    }
+
+    public EditChestShulkerProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, boolean putBack, SubProcess nextProcess) {
+        super(getProcess(chestCoords, chestSlot, hotbarSlot, placeShulker, doInShulker, putBack, nextProcess));
     }
 
 }
