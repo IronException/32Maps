@@ -17,9 +17,17 @@
 
 package baritone.process.sub.processes;
 
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
+
+/**
+ *
+ * should go to the right chest / shulker / slot to put the map there... if the map is already there... Idk prly drop it? then? at least msg me
+ *
+ */
 public class putMap extends SubProcess {
 
-    public putMap(SubProcess nextProcess) {
+    public putMap(BlockPos putMapCoords, Vec3i putMapLocs, Vec3i relativeShulkerPos, SubProcess nextProcess) {
         super(nextProcess);
     }
 

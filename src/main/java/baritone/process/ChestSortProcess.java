@@ -28,14 +28,15 @@ import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotHelper;
 import baritone.utils.BaritoneProcessHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 
 public final class ChestSortProcess extends BaritoneProcessHelper implements IChestSortProcess, AbstractGameEventListener {
     private static final PathingCommand NO_PATH = new PathingCommand(null, PathingCommandType.DEFER);
 
     public static BlockPos targetPos = new BlockPos(0, 5, 0);
     public static BlockPos putMaps = new BlockPos(5, 5, 0);
-    public static int addX = 0;
-    public static int addZ = 2;
+    public static Vec3i putMapLocs = new Vec3i(0, 0, 2);
+    public static Vec3i relativeShulkerPos = new Vec3i(3, 0, 0);
     public static SlotHelper hotbarSlot = new SlotHelper(5, ContainerType.HOTBAR);
 
     public static BlockPos shulkerPos = new BlockPos(-10, 4, 10);
@@ -63,7 +64,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         return
                 new ChatProcess("start",
-                new getMaps(targetPos, hotbarSlot, shulkerPos,
+                new putMap(putMaps, putMapLocs, relativeShulkerPos,
                         new ChatProcess("end", new Epsilon())));
 
     }
@@ -94,7 +95,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         PathingCommand rV = process.getReturn();
         if (rV == null) {
-            //logDirect("No SubProcess returned a PathingCommand. THIS HAS TO BE FIXED");
+            logDirect("No SubProcess returned a PathingCommand. THIS HAS TO BE FIXED");
             // could also be Request Pause
             rV = new PathingCommand(new GoalBlock(ctx.playerFeet()), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
         }
