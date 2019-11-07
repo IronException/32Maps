@@ -51,7 +51,7 @@ public class MultiProcess extends SubProcess {
 
     @Override
     public PathingCommand getReturn(PathingCommand alt) {
-        return this.process.getReturn(alt);
+        return this.process.finished() ? this.nextProcess.getReturn(alt) : this.process.getReturn(alt);
     }
 
     /**
