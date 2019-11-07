@@ -19,7 +19,6 @@ package baritone.process.sub.processes;
 
 import baritone.api.process.PathingCommand;
 
-import java.nio.file.Path;
 
 public class MultiProcess extends SubProcess {
 

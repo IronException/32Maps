@@ -19,25 +19,17 @@ package baritone.process.sub.processes;
 
 import baritone.api.utils.Helper;
 
-public class ChatProcess extends SubProcess implements Helper {
+public class ChatProcess extends OneTimeCommand implements Helper {
 
     String toWrite;
-    boolean told;
 
     public ChatProcess(String toWrite, SubProcess nextProcess) {
         super(nextProcess);
-        this.told = false;
         this.toWrite = toWrite;
-    }
-
-    @Override
-    public boolean isFinished() {
-        return this.told;
     }
 
     @Override
     public void doTick() {
         logDirect(toWrite);
-        this.told = true;
     }
 }
