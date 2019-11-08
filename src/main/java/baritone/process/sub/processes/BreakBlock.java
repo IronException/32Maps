@@ -30,9 +30,13 @@ import net.minecraft.util.math.BlockPos;
 import java.util.Optional;
 
 public class BreakBlock extends GoalNearProcess {
+    
+    protected Item getItemWeBreak(){
+        return BlockStateInterface.get(ctx, super.nearGoal).getBlock();
+    }
 
-    public BreakBlock(BlockPos nearGoal, SubProcess nextProcess) {
-        super(nearGoal, 2, new OneTimeCommand(nextProcess) {
+    public BreakBlock(BlockPos nearGoal, boolean pickUpItem, SubProcess nextProcess) {
+        super(nearGoal, 2, new OneTimeCommand(new PickUpItem(nearGoal, getItemWeBreak(), nextProcess)) {
 
             @Override
             public void doTick() {
