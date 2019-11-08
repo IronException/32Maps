@@ -25,15 +25,11 @@ import net.minecraft.util.math.Vec3i;
  * should go to the right chest / shulker / slot to put the map there... if the map is already there... Idk prly drop it? then? at least msg me
  *
  */
-public class putMap extends SubProcess {
+public class putMap extends OneTimeCommand {
 
     public putMap(BlockPos putMapCoords, Vec3i putMapLocs, Vec3i relativeShulkerPos, SubProcess nextProcess) {
-        super(nextProcess);
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
+        // TODO 
+        super(new EditChestShulkerProcess(putMapCoords.add(putMapLocs.multiply(calculateChestCoords()), new SlotHelper(calculateChestSlot(), ContainerType.NORMAL_CHEST), hotbarSlot, placeShulker, new SwapSlot(), true, nextProcess));
     }
 
     @Override
