@@ -17,8 +17,12 @@
 
 package baritone.process.sub.processes;
 
+import baritone.process.sub.processes.helper.ContainerType;
+import baritone.process.sub.processes.helper.SlotHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+
+import static baritone.process.ChestSortProcess.hotbarSlot;
 
 /**
  *
@@ -29,8 +33,18 @@ public class putMap extends OneTimeCommand {
 
     public putMap(BlockPos putMapCoords, Vec3i putMapLocs, Vec3i relativeShulkerPos, SubProcess nextProcess) {
         // TODO 
-        super(new EditChestShulkerProcess(putMapCoords.add(putMapLocs.multiply(calculateChestCoords()), new SlotHelper(calculateChestSlot(), ContainerType.NORMAL_CHEST), hotbarSlot, placeShulker, new SwapSlot(), true, nextProcess));
+        super(new EditChestShulkerProcess(putMapCoords.add(putMapLocs.multiply(calculateChestCoords()), new SlotHelper(calculateChestSlot(), ContainerType.NORMAL_CHEST), hotbarSlot, placeShulker, new SwapSlot(), true, nextProcess)));
     }
+
+    private int calculateChestCoords() {
+        return 0;
+    }
+
+    private int calculateChestSlot() {
+        return 0;
+    }
+
+
 
     @Override
     public void doTick() {
