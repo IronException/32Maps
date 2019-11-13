@@ -28,6 +28,7 @@ import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotHelper;
 import baritone.utils.BaritoneProcessHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
 public final class ChestSortProcess extends BaritoneProcessHelper implements IChestSortProcess, AbstractGameEventListener {
@@ -35,7 +36,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
     public static BlockPos targetPos = new BlockPos(0, 5, 0);
     public static BlockPos putMaps = new BlockPos(5, 5, 0);
-    public static Vec3i putMapLocs = new Vec3i(0, 0, 2);
+    public static Vec3d putMapLocs = new Vec3d(0, 0, 2);
     public static Vec3i relativeShulkerPos = new Vec3i(3, 0, 0);
     public static SlotHelper hotbarSlot = new SlotHelper(5, ContainerType.HOTBAR);
 
@@ -64,7 +65,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         return
                 new ChatProcess("start",
-                new putMap(putMaps, putMapLocs, relativeShulkerPos,
+                new putMap(putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
                         new ChatProcess("end", new Epsilon())));
 
     }

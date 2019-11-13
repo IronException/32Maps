@@ -28,15 +28,15 @@ import net.minecraft.util.math.BlockPos;
 
 public class EditShulkerProcess extends ForwardProcess {
 
-    protected static SubProcess getProcess(BlockPos placeCoords, SlotHelper hotbarSlot, SubProcess doInShulker, SubProcess nextProcess) {
+    protected static SubProcess getProcess(BlockPos placeCoords, SlotHelper hotbarSlot, SubProcess doInShulker, boolean pickUpShulker, SubProcess nextProcess) {
         return new PlaceBlock(placeCoords, hotbarSlot,
                 new DoInContainerProcess(placeCoords, doInShulker,
-                        new BreakBlock(placeCoords,
+                        new BreakBlock(placeCoords, pickUpShulker,
                                 nextProcess)));
     }
 
-    public EditShulkerProcess(BlockPos placeCoords, SlotHelper hotbarSlot, SubProcess doInShulker, SubProcess nextProcess) {
-        super(getProcess(placeCoords, hotbarSlot, doInShulker, nextProcess));
+    public EditShulkerProcess(BlockPos placeCoords, SlotHelper hotbarSlot, SubProcess doInShulker, boolean pickUpShulker, SubProcess nextProcess) {
+        super(getProcess(placeCoords, hotbarSlot, doInShulker, pickUpShulker, nextProcess));
     }
 
 }

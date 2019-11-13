@@ -20,9 +20,9 @@ package baritone.process.sub.processes;
 import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
-import static baritone.process.ChestSortProcess.hotbarSlot;
 
 /**
  *
@@ -31,20 +31,27 @@ import static baritone.process.ChestSortProcess.hotbarSlot;
  */
 public class putMap extends OneTimeCommand {
 
-    public putMap(BlockPos putMapCoords, Vec3i putMapLocs, Vec3i relativeShulkerPos, SubProcess nextProcess) {
-        // TODO 
-        super(new EditChestShulkerProcess(putMapCoords.add(putMapLocs.multiply(calculateChestCoords()), new SlotHelper(calculateChestSlot(), ContainerType.NORMAL_CHEST), hotbarSlot, placeShulker, new SwapSlot(), true, nextProcess)));
+
+    protected static SubProcess getProcess(BlockPos putMapCoords, Vec3d putMapLocs, SlotHelper hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess){
+        putMapLocs = putMapLocs.scale(calculateChestCoords());
+        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z), new SlotHelper(calculateChestSlot(), ContainerType.NORMAL_CHEST), hotbarSlot, putMapCoords.add(relativeShulkerPos), new SwapSlot(hotbarSlot, new SlotHelper(calculateShulkerSlot(), ContainerType.NORMAL_CHEST), new Epsilon()), true, nextProcess);
     }
 
-    private int calculateChestCoords() {
+    public putMap(BlockPos putMapCoords, Vec3d putMapLocs, SlotHelper hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess) {
+        super(getProcess(putMapCoords, putMapLocs, hotbarSlot, relativeShulkerPos, nextProcess));
+    }
+
+    private static int calculateChestCoords() {
         return 0;
     }
 
-    private int calculateChestSlot() {
+    private static int calculateChestSlot() {
         return 0;
     }
 
-
+    private static int calculateShulkerSlot() {
+        return 0;
+    }
 
     @Override
     public void doTick() {

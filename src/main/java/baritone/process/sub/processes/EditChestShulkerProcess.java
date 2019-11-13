@@ -37,7 +37,7 @@ public class EditChestShulkerProcess extends ForwardProcess {
         SubProcess[] rV = new SubProcess[]{
                 getSwapInChest(chestCoords, chestSlot, hotbarSlot),
                 new ChatProcess("now what?", new Epsilon()),
-                new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker, new Epsilon()),
+                new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker, putBack, new Epsilon()),
                 // TODO pick up the dropped item...
                 getSwapInChest(chestCoords, chestSlot, hotbarSlot),
                 nextProcess

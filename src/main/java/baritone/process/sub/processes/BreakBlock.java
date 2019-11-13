@@ -23,20 +23,23 @@ import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
 import baritone.api.utils.input.Input;
 import baritone.pathing.movement.MovementHelper;
+import baritone.process.ChestSortProcess;
+import baritone.process.sub.processes.helper.PickUpItem;
 import baritone.utils.BlockStateInterface;
 import net.minecraft.block.BlockAir;
+import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
 
 public class BreakBlock extends GoalNearProcess {
     
-    protected Item getItemWeBreak(){
-        return BlockStateInterface.get(ctx, super.nearGoal).getBlock();
+    protected static Item getItemWeBreak(BlockPos blockPos){
+        return Item.getItemFromBlock(BlockStateInterface.get(ChestSortProcess.INSTANCE.ctx, blockPos).getBlock());
     }
 
     public BreakBlock(BlockPos nearGoal, boolean pickUpItem, SubProcess nextProcess) {
-        super(nearGoal, 2, new OneTimeCommand(new PickUpItem(nearGoal, getItemWeBreak(), nextProcess)) {
+        super(nearGoal, 2, new OneTimeCommand(new PickUpItem(nearGoal, getItemWeBreak(nearGoal), nextProcess)) {
 
             @Override
             public void doTick() {
