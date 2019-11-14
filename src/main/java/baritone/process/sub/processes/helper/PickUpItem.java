@@ -24,7 +24,7 @@ import net.minecraft.util.math.BlockPos;
 public class PickUpItem extends SubProcess {
     public PickUpItem(BlockPos nearGoal, Item itemWeBreak, SubProcess nextProcess) {
         super(nextProcess);
-        // TODO
+        // TODO need ro move this
     }
 
     @Override
@@ -35,5 +35,28 @@ public class PickUpItem extends SubProcess {
     @Override
     public void doTick() {
 
+    }
+    
+    public static List<BlockPos> droppedItemsScan(List<Block> mining, World world) {
+        if (!Baritone.settings().mineScanDroppedItems.value) {
+            return Collections.emptyList();
+        }
+        Set<Item> searchingFor = new HashSet<>();
+        for (Block block : mining) {
+            Item drop = block.getItemDropped(block.getDefaultState(), new Random(), 0);
+            Item ore = Item.getItemFromBlock(block);
+            searchingFor.add(drop);
+            searchingFor.add(ore);
+        }
+        List<BlockPos> ret = new ArrayList<>();
+        for (Entity entity : world.loadedEntityList) {
+            if (entity instanceof EntityItem) {
+                EntityItem ei = (EntityItem) entity;
+                if (searchingFor.contains(ei.getItem().getItem())) {
+                    ret.add(new BlockPos(entity));
+                }
+            }
+        }
+        return ret;
     }
 }
