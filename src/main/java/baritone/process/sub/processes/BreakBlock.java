@@ -24,7 +24,6 @@ import baritone.api.utils.RotationUtils;
 import baritone.api.utils.input.Input;
 import baritone.pathing.movement.MovementHelper;
 import baritone.process.ChestSortProcess;
-import baritone.process.sub.processes.helper.PickUpItem;
 import baritone.utils.BlockStateInterface;
 import net.minecraft.block.BlockAir;
 import net.minecraft.item.Item;
