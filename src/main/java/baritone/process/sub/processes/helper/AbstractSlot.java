@@ -17,18 +17,25 @@
 
 package baritone.process.sub.processes.helper;
 
-import net.minecraft.block.Block;
+import baritone.process.ChestSortProcess;
+import net.minecraft.item.Item;
 
 public class AbstractSlot extends SlotHelper {
-    public AbstractSlot(Block purpleShulkerBox, ContainerType type) {
-        super(0, type);
-        // TODO
+
+    Item item;
+
+    public AbstractSlot(Item item) {
+        super(0, null);
+        this.item = item;
     }
 
     @Override
     public int getSlotIn(ContainerType in) {
-
-
+        for (int i = 0; i < ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size(); i ++) {
+            if(ChestSortProcess.INSTANCE.ctx.player().openContainer.getSlot(i).getStack().getItem().equals(this.item))
+                return i;
+        }
+        // what to do exactly then?
         return 0;
     }
 }

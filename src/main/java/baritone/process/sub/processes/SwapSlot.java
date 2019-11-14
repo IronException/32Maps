@@ -17,6 +17,7 @@
 
 package baritone.process.sub.processes;
 
+import baritone.process.sub.processes.helper.AbstractSlot;
 import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotHelper;
 import net.minecraft.inventory.ClickType;
@@ -38,7 +39,7 @@ public class SwapSlot extends SubProcess {
     this.slot2 = slot2;
   }
 
-  /**
+    /**
    * we are done after phase 2
    */
   @Override

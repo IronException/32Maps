@@ -18,9 +18,9 @@
 package baritone.process.sub.processes;
 
 import baritone.process.sub.processes.helper.AbstractSlot;
-import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotHelper;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -31,7 +31,7 @@ public class getMaps extends OneTimeCommand {
 
     public getMaps(BlockPos chestCoords, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess nextProcess) {
         // TODO take the first shulker in the chest not the first slot. =>
-        super(new EditChestShulkerProcess(chestCoords, new AbstractSlot(Blocks.PURPLE_SHULKER_BOX, ContainerType.NORMAL_CHEST), hotbarSlot, placeShulker, new SwapSlots(), false, nextProcess));
+        super(new EditChestShulkerProcess(chestCoords, new AbstractSlot(Item.getItemFromBlock(Blocks.PURPLE_SHULKER_BOX)), hotbarSlot, placeShulker, new SwapSlots(), false, nextProcess));
     }
 
     @Override
