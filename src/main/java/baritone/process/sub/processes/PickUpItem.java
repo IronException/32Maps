@@ -34,38 +34,50 @@ import java.util.*;
 
 public class PickUpItem extends ReturnProcess {
 
-    public PickUpItem(BlockPos nearGoal, Item itemWeBreak, SubProcess nextProcess) {
+    Item toPickUp;
+    BlockPos nearGoal, actual;
+
+    public PickUpItem(BlockPos nearGoal, Item itemWeWant, SubProcess nextProcess) {
         super(nextProcess);
         // TODO need ro move this
-
+        this.toPickUp = itemWeWant;
     }
 
     @Override
     public boolean isFinished() {
+        // well, how do we know we picked up exactly that?
         return false;
     }
 
     @Override
     public void doTick() {
+        if(actual == null) {
+            List<BlockPos> blocks = droppedItemsScan(this.toPickUp, ctx.world());
+            blocks.sort(new Comparator<BlockPos>() {
+                @Override
+                public int compare(BlockPos o1, BlockPos o2) {
+                    return (int) o1.distanceSq((double) o2.getX(), (double) o2.getY(), (double) o2.getZ());
+                }
+            });
 
+            actual = blocks.get(0);
+        }
     }
 
     @Override
     public PathingCommand generateReturn() {
-        List<BlockPos> blocks = droppedItemsScan(new ArrayList<>(), ctx.world());
-
-        return new PathingCommand(new GoalBlock(0, 0, 0), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
+        if(this.actual == null)
+            return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+        return new PathingCommand(new GoalBlock(this.actual), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
     }
 
-    public static List<BlockPos> droppedItemsScan(List<Block> mining, World world) {
+    public static List<BlockPos> droppedItemsScan(Item item, World world) {
 
+        // this must also work without a list. but I dont know and never change a running system...
         Set<Item> searchingFor = new HashSet<>();
-        for (Block block : mining) {
-            Item drop = block.getItemDropped(block.getDefaultState(), new Random(), 0);
-            Item ore = Item.getItemFromBlock(block);
-            searchingFor.add(drop);
-            searchingFor.add(ore);
-        }
+        searchingFor.add(item);
+
+
         List<BlockPos> ret = new ArrayList<>();
         for (Entity entity : world.loadedEntityList) {
             if (entity instanceof EntityItem) {

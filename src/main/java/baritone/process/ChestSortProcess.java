@@ -37,7 +37,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public static BlockPos targetPos = new BlockPos(0, 5, 0);
     public static BlockPos putMaps = new BlockPos(5, 5, 0);
     public static Vec3d putMapLocs = new Vec3d(0, 0, 2);
-    public static Vec3i relativeShulkerPos = new Vec3i(3, 0, 0);
+    public static Vec3i relativeShulkerPos = new Vec3i(3, -1, 0);
     public static SlotHelper hotbarSlot = new SlotHelper(5, ContainerType.HOTBAR);
 
     public static BlockPos shulkerPos = new BlockPos(-10, 4, 10);
@@ -65,7 +65,8 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         return
                 new ChatProcess("start",
-                new putMap(putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
+                //new putMap(putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
+                new BreakBlock(targetPos, true,
                         new ChatProcess("end", new Epsilon())));
 
     }

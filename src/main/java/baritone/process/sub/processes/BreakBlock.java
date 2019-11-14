@@ -37,14 +37,22 @@ public class BreakBlock extends GoalNearProcess {
         return Item.getItemFromBlock(BlockStateInterface.get(ChestSortProcess.INSTANCE.ctx, blockPos).getBlock());
     }
 
-    public BreakBlock(BlockPos nearGoal, boolean pickUpItem, SubProcess nextProcess) {
-        super(nearGoal, 2, new OneTimeCommand(new PickUpItem(nearGoal, getItemWeBreak(nearGoal), nextProcess)) {
+    protected static SubProcess getProcess(BlockPos nearGoal, boolean pickUpItem, SubProcess nextProcess){
+        if(pickUpItem)
+            nextProcess = new PickUpItem(nearGoal, getItemWeBreak(nearGoal), nextProcess);
+
+        return new OneTimeCommand(nextProcess) {
 
             @Override
             public void doTick() {
                 baritone.getInputOverrideHandler().clearAllKeys();
             }
-        });
+        };
+    }
+
+
+    public BreakBlock(BlockPos nearGoal, boolean pickUpItem, SubProcess nextProcess) {
+        super(nearGoal, 2, getProcess(nearGoal, pickUpItem, nextProcess));
     }
 
     @Override
