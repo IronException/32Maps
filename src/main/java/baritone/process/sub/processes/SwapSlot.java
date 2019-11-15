@@ -17,8 +17,6 @@
 
 package baritone.process.sub.processes;
 
-import baritone.process.sub.processes.helper.AbstractSlot;
-import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotHelper;
 import net.minecraft.inventory.ClickType;
 
@@ -29,6 +27,7 @@ public class SwapSlot extends SubProcess {
 
   protected int phase;
   protected SlotHelper slot1, slot2;
+  protected Integer slotId1, slotId2;
 
   public SwapSlot(SlotHelper slot1, SlotHelper slot2, SubProcess nextProcess) {
     super(nextProcess);
@@ -49,21 +48,26 @@ public class SwapSlot extends SubProcess {
 
   @Override
   public void doTick() {
+    calculateSlots();
     switch (phase) {
       case 0:
       case 2:
-        this.pressSlot(this.slot1);
+        this.pressSlot(this.slotId1);
         break;
       case 1:
-        this.pressSlot(this.slot2);
+        this.pressSlot(this.slotId2);
         break;
     }
     phase ++;
   }
 
-  protected void pressSlot(SlotHelper slot) {
-    this.pressSlot(slot.getSlotNow());
+  private void calculateSlots() {
+    if(this.slotId1 != null)
+      return;
+    this.slotId1 = this.slot1.getSlotNow();
+    this.slotId2 = this.slot2.getSlotNow();
   }
+
 
   protected void pressSlot(int slot) {
     super.ctx.playerController().windowClick(super.ctx.player().openContainer.windowId, slot, 0, ClickType.PICKUP, super.ctx.player());

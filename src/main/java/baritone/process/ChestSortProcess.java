@@ -64,12 +64,14 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         ); // TODO its going to the same pos twice like this. so redo that....
         */
 
+        SlotHelper first = new SlotHelper(0, ContainerType.NORMAL_CHEST);
+        first = new AbstractSlot(Item.getItemById(1));
 
         return
                 new ChatProcess("start",
                 //new putMap(putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
                 //new BreakBlock(targetPos, true,
-                new DoInContainerProcess(targetPos, new SwapSlot(new AbstractSlot(Item.getItemById(1)), new SlotHelper(0, ContainerType.HOTBAR), new Epsilon()),
+                new DoInContainerProcess(targetPos, new SwapSlot(first, new SlotHelper(0, ContainerType.HOTBAR), new Epsilon()),
                         new ChatProcess("end", new Epsilon())));
 
     }
