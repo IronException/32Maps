@@ -36,6 +36,7 @@ public class PickUpItem extends ReturnProcess {
 
     Item toPickUp;
     BlockPos nearGoal, actual;
+    int items;
 
     public PickUpItem(BlockPos nearGoal, Item itemWeWant, SubProcess nextProcess) {
         super(nextProcess);
@@ -46,13 +47,14 @@ public class PickUpItem extends ReturnProcess {
     @Override
     public boolean isFinished() {
         // well, how do we know we picked up exactly that?
-        return false;
+        return droppedItemsScan(this.toPickUp, ctx.world()).size() < this.items;
     }
 
     @Override
     public void doTick() {
         if(actual == null) {
             List<BlockPos> blocks = droppedItemsScan(this.toPickUp, ctx.world());
+            this.items = blocks.size();
             blocks.sort(new Comparator<BlockPos>() {
                 @Override
                 public int compare(BlockPos o1, BlockPos o2) {
