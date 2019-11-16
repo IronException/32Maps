@@ -36,14 +36,12 @@ public class EditChestShulkerProcess extends ForwardProcess {
     protected static SubProcess getProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, boolean putBack, SubProcess nextProcess) {
         SubProcess[] rV = new SubProcess[]{
                 getSwapInChest(chestCoords, chestSlot, hotbarSlot),
-                new ChatProcess("now what?", new Epsilon()),
                 new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker, putBack, new Epsilon()),
-                // TODO pick up the dropped item...
                 getSwapInChest(chestCoords, chestSlot, hotbarSlot),
                 nextProcess
         };
         if(!putBack)
-            rV[3] = new Epsilon();
+            rV[2] = new Epsilon();
         return new MultiProcess(rV);
     }
 

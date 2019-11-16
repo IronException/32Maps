@@ -20,9 +20,15 @@ package baritone.process.sub.processes.helper;
 import baritone.process.ChestSortProcess;
 import net.minecraft.item.Item;
 
+/**
+ * when getting the slot once it stays as that...
+ *
+ */
+
 public class AbstractSlot extends SlotHelper {
 
     Item item;
+    Integer slot;
 
     public AbstractSlot(Item item) {
         super(0, null);
@@ -31,11 +37,12 @@ public class AbstractSlot extends SlotHelper {
 
     @Override
     public int getSlotIn(ContainerType in) {
-        for (int i = 0; i < ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size(); i ++) {
-            if(ChestSortProcess.INSTANCE.ctx.player().openContainer.getSlot(i).getStack().getItem().equals(this.item))
-                return i;
-        }
-        // what to do exactly then?
-        return 0;
+        if(slot == null)
+            for (int i = 0; i < ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size(); i ++)
+                if(ChestSortProcess.INSTANCE.ctx.player().openContainer.getSlot(i).getStack().getItem().equals(this.item)) {
+                    this.slot = i;
+                    return this.slot;
+                }
+        return this.slot;
     }
 }

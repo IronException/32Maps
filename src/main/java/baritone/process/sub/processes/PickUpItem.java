@@ -17,13 +17,9 @@
 
 package baritone.process.sub.processes;
 
-import baritone.Baritone;
 import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
-import baritone.process.sub.processes.ReturnProcess;
-import baritone.process.sub.processes.SubProcess;
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
@@ -38,7 +34,7 @@ public class PickUpItem extends ReturnProcess {
     BlockPos nearGoal, actual;
     int items;
 
-    public PickUpItem(BlockPos nearGoal, Item itemWeWant, SubProcess nextProcess) {
+    public PickUpItem(Item itemWeWant, SubProcess nextProcess) {
         super(nextProcess);
         // TODO need ro move this
         this.toPickUp = itemWeWant;
@@ -58,11 +54,15 @@ public class PickUpItem extends ReturnProcess {
             blocks.sort(new Comparator<BlockPos>() {
                 @Override
                 public int compare(BlockPos o1, BlockPos o2) {
-                    return (int) o1.distanceSq((double) o2.getX(), (double) o2.getY(), (double) o2.getZ());
+                    return (int) (o1.distanceSq((double) nearGoal.getX(), (double) nearGoal.getY(), (double) nearGoal.getZ())
+                                - o2.distanceSq((double) nearGoal.getX(), (double) nearGoal.getY(), (double) nearGoal.getZ()));
                 }
             });
 
-            actual = blocks.get(0);
+            logDirect("item: " + toPickUp);
+            logDirect(blocks.size() + " items");
+            if(!blocks.isEmpty())
+                actual = blocks.get(0);
         }
     }
 

@@ -25,21 +25,27 @@ import baritone.api.utils.input.Input;
 import baritone.pathing.movement.MovementHelper;
 import baritone.process.ChestSortProcess;
 import baritone.utils.BlockStateInterface;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
+import java.util.Random;
 
 public class BreakBlock extends GoalNearProcess {
     
     protected static Item getItemWeBreak(BlockPos blockPos){
-        return Item.getItemFromBlock(BlockStateInterface.get(ChestSortProcess.INSTANCE.ctx, blockPos).getBlock());
+
+        Block block = BlockStateInterface.get(ChestSortProcess.INSTANCE.ctx, blockPos).getBlock();
+        ChestSortProcess.INSTANCE.logDirect("get block: " + block);
+        return block.getItemDropped(block.getDefaultState(), new Random(), 0);
+        //return Item.getItemFromBlock(BlockStateInterface.get(ChestSortProcess.INSTANCE.ctx, blockPos).getBlock());
     }
 
     protected static SubProcess getProcess(BlockPos nearGoal, boolean pickUpItem, SubProcess nextProcess){
         if(pickUpItem)
-            nextProcess = new PickUpItem(nearGoal, getItemWeBreak(nearGoal), nextProcess);
+            nextProcess = new PickUpItem(getItemWeBreak(nearGoal), nextProcess);
 
         return new OneTimeCommand(nextProcess) {
 

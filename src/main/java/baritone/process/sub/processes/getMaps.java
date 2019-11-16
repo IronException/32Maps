@@ -31,7 +31,7 @@ public class getMaps extends OneTimeCommand {
 
     public getMaps(BlockPos chestCoords, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess nextProcess) {
         // TODO take the first shulker in the chest not the first slot. =>
-        super(new EditChestShulkerProcess(chestCoords, new AbstractSlot(Item.getItemFromBlock(Blocks.PURPLE_SHULKER_BOX)), hotbarSlot, placeShulker, new SwapSlots(), false, nextProcess));
+        super(new EditChestShulkerProcess(chestCoords, new AbstractSlot(Item.getItemFromBlock(Blocks.PURPLE_SHULKER_BOX)), hotbarSlot, placeShulker, new SwapSlots(), true, nextProcess));
     }
 
     @Override
