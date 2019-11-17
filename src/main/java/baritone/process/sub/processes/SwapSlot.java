@@ -42,7 +42,7 @@ public class SwapSlot extends SubProcess {
    */
   @Override
   public boolean isFinished() {
-    return this.phase > 2;
+    return this.phase > 4; // 2 ticks extra just in case
   }
 
   @Override

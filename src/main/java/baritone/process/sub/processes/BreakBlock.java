@@ -61,7 +61,7 @@ public class BreakBlock extends GoalNearProcess {
     public boolean isFinished() {
         Block block = BlockStateInterface.get(ctx, super.nearGoal).getBlock();
         boolean rV = block instanceof BlockAir;
-        if(!rV)
+        if(!rV && this.pick != null) // if you should pick up its not null
             this.pick.setItem(block.getItemDropped(block.getDefaultState(), new Random(), 0));
         return rV;
     }
