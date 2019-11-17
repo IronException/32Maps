@@ -34,7 +34,8 @@ public class putMap extends OneTimeCommand {
 
     protected static SubProcess getProcess(BlockPos putMapCoords, Vec3d putMapLocs, SlotHelper hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess){
         putMapLocs = putMapLocs.scale(calculateChestCoords());
-        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z), new SlotHelper(calculateChestSlot(), ContainerType.NORMAL_CHEST), hotbarSlot, putMapCoords.add(relativeShulkerPos), new SwapSlot(hotbarSlot, new SlotHelper(calculateShulkerSlot(), ContainerType.NORMAL_CHEST), new Epsilon()), true, nextProcess);
+        // chestSlot: new SlotHelper(calculateChestSlot(), ContainerType.NORMAL_CHEST),
+        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z), hotbarSlot, putMapCoords.add(relativeShulkerPos), new SwapSlot(hotbarSlot, new SlotHelper(calculateShulkerSlot(), ContainerType.NORMAL_CHEST), new Epsilon()), true, nextProcess);
     }
 
     public putMap(BlockPos putMapCoords, Vec3d putMapLocs, SlotHelper hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess) {

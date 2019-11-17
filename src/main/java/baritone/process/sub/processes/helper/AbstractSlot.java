@@ -30,19 +30,47 @@ public class AbstractSlot extends SlotHelper {
     Item item;
     Integer slot;
 
-    public AbstractSlot(Item item) {
+    SlotHelper startSearch;
+    boolean topBottom;
+
+    public AbstractSlot(Item item, SlotHelper startSearching, boolean topToBottom) {
         super(0, null);
         this.item = item;
+        this.startSearch = startSearching;
+        this.topBottom = topToBottom;
+    }
+
+
+    protected boolean isTheOne(int i) {
+        return ChestSortProcess.INSTANCE.ctx.player().openContainer.getSlot(i).getStack().getItem().equals(this.item);
     }
 
     @Override
     public int getSlotIn(ContainerType in) {
         if(slot == null)
-            for (int i = 0; i < ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size(); i ++)
-                if(ChestSortProcess.INSTANCE.ctx.player().openContainer.getSlot(i).getStack().getItem().equals(this.item)) {
-                    this.slot = i;
-                    return this.slot;
-                }
+            if (topBottom) {
+                for (int i = startSearch.getSlotIn(in); i < ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size(); i++)
+                    if (isTheOne(i)) {
+                        this.slot = i;
+                        return this.slot;
+                    }
+                for (int i = 0; i < startSearch.getSlotIn(in); i++)
+                    if (isTheOne(i)) {
+                        this.slot = i;
+                        return this.slot;
+                    }
+            } else {
+                for (int i = startSearch.getSlotIn(in); i >= 0; i--)
+                    if (isTheOne(i)) {
+                        this.slot = i;
+                        return this.slot;
+                    }
+                for (int i = ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size() - 1; i > startSearch.getSlotIn(in); i--)
+                    if (isTheOne(i)) {
+                        this.slot = i;
+                        return this.slot;
+                    }
+            }
         return this.slot;
     }
 }

@@ -18,7 +18,11 @@
 package baritone.process.sub.processes;
 
 
+import baritone.process.sub.processes.helper.AbstractSlot;
+import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotHelper;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -33,11 +37,12 @@ public class EditChestShulkerProcess extends ForwardProcess {
                 new Epsilon());
     }
 
-    protected static SubProcess getProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, boolean putBack, SubProcess nextProcess) {
+    protected static SubProcess getProcess(BlockPos chestCoords, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, boolean putBack, SubProcess nextProcess) {
+        SlotHelper chestSlot = new AbstractSlot(Item.getItemFromBlock(Blocks.PURPLE_SHULKER_BOX), new SlotHelper(0, ContainerType.NORMAL_CHEST), true);
         SubProcess[] rV = new SubProcess[]{
                 getSwapInChest(chestCoords, chestSlot, hotbarSlot),
                 new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker, putBack, new Epsilon()),
-                getSwapInChest(chestCoords, chestSlot, hotbarSlot),
+                getSwapInChest(chestCoords, chestSlot, new AbstractSlot(Item.getItemFromBlock(Blocks.PURPLE_SHULKER_BOX), new SlotHelper(0, ContainerType.HOTBAR), true)), // item could have also went somewhere else in inventory
                 nextProcess
         };
         if(!putBack)
@@ -48,18 +53,17 @@ public class EditChestShulkerProcess extends ForwardProcess {
     /**
      * puts the shulker back ovsly. I mean why wouldnt you?
      * @param chestCoords
-     * @param chestSlot
      * @param hotbarSlot
      * @param placeShulker
      * @param doInShulker
      * @param nextProcess
      */
-    public EditChestShulkerProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, SubProcess nextProcess) {
-        this(chestCoords, chestSlot, hotbarSlot, placeShulker, doInShulker, true, nextProcess);
+    public EditChestShulkerProcess(BlockPos chestCoords, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, SubProcess nextProcess) {
+        this(chestCoords, hotbarSlot, placeShulker, doInShulker, true, nextProcess);
     }
 
-    public EditChestShulkerProcess(BlockPos chestCoords, SlotHelper chestSlot, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, boolean putBack, SubProcess nextProcess) {
-        super(getProcess(chestCoords, chestSlot, hotbarSlot, placeShulker, doInShulker, putBack, nextProcess));
+    public EditChestShulkerProcess(BlockPos chestCoords, SlotHelper hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, boolean putBack, SubProcess nextProcess) {
+        super(getProcess(chestCoords, hotbarSlot, placeShulker, doInShulker, putBack, nextProcess));
     }
 
 }
