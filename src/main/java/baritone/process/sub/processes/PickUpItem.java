@@ -40,6 +40,10 @@ public class PickUpItem extends ReturnProcess {
         this.toPickUp = itemWeWant;
     }
 
+    public void setItem(Item item){
+        this.toPickUp = item;
+    }
+
     @Override
     public boolean isFinished() {
         // well, how do we know we picked up exactly that?

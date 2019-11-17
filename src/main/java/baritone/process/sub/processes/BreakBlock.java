@@ -23,29 +23,19 @@ import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
 import baritone.api.utils.input.Input;
 import baritone.pathing.movement.MovementHelper;
-import baritone.process.ChestSortProcess;
 import baritone.utils.BlockStateInterface;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
-import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
 import java.util.Random;
 
 public class BreakBlock extends GoalNearProcess {
-    
-    protected static Item getItemWeBreak(BlockPos blockPos){
-
-        Block block = BlockStateInterface.get(ChestSortProcess.INSTANCE.ctx, blockPos).getBlock();
-        ChestSortProcess.INSTANCE.logDirect("get block: " + block);
-        return block.getItemDropped(block.getDefaultState(), new Random(), 0);
-        //return Item.getItemFromBlock(BlockStateInterface.get(ChestSortProcess.INSTANCE.ctx, blockPos).getBlock());
-    }
 
     protected static SubProcess getProcess(BlockPos nearGoal, boolean pickUpItem, SubProcess nextProcess){
         if(pickUpItem)
-            nextProcess = new PickUpItem(getItemWeBreak(nearGoal), nextProcess);
+            nextProcess = new PickUpItem(null, nextProcess);
 
         return new OneTimeCommand(nextProcess) {
 
@@ -56,14 +46,24 @@ public class BreakBlock extends GoalNearProcess {
         };
     }
 
+    PickUpItem pick;
+
 
     public BreakBlock(BlockPos nearGoal, boolean pickUpItem, SubProcess nextProcess) {
         super(nearGoal, 2, getProcess(nearGoal, pickUpItem, nextProcess));
+        // I cant think of a better way to get this... while in super it is not possible...
+        if(pickUpItem)
+            this.pick = (PickUpItem) super.nextProcess.nextProcess;
+
     }
 
     @Override
     public boolean isFinished() {
-        return BlockStateInterface.get(ctx, super.nearGoal).getBlock() instanceof BlockAir;
+        Block block = BlockStateInterface.get(ctx, super.nearGoal).getBlock();
+        boolean rV = block instanceof BlockAir;
+        if(!rV)
+            this.pick.setItem(block.getItemDropped(block.getDefaultState(), new Random(), 0));
+        return rV;
     }
 
     @Override
