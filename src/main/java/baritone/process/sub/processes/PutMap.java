@@ -29,16 +29,16 @@ import net.minecraft.util.math.Vec3i;
  * should go to the right chest / shulker / slot to put the map there... if the map is already there... Idk prly drop it? then? at least msg me
  *
  */
-public class putMap extends OneTimeCommand {
+public class PutMap extends OneTimeCommand {
 
 
-    protected static SubProcess getProcess(BlockPos putMapCoords, Vec3d putMapLocs, SlotConverter hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess){
+    protected static SubProcess getProcess(SlotConverter mapSlot, BlockPos putMapCoords, Vec3d putMapLocs, SlotConverter hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess){
         putMapLocs = putMapLocs.scale(calculateChestCoords());
-        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z), new SlotConverter(calculateChestSlot(), ContainerType.NORMAL_CHEST), hotbarSlot, putMapCoords.add(relativeShulkerPos), new SwapSlot(hotbarSlot, new SlotConverter(calculateShulkerSlot(), ContainerType.NORMAL_CHEST), new Epsilon()), true, nextProcess);
+        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z), new SlotConverter(calculateChestSlot(), ContainerType.NORMAL_CHEST), hotbarSlot, putMapCoords.add(relativeShulkerPos), new SwapSlot(mapSlot, new SlotConverter(calculateShulkerSlot(), ContainerType.NORMAL_CHEST), new Epsilon()), true, nextProcess);
     }
 
-    public putMap(BlockPos putMapCoords, Vec3d putMapLocs, SlotConverter hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess) {
-        super(getProcess(putMapCoords, putMapLocs, hotbarSlot, relativeShulkerPos, nextProcess));
+    public PutMap(SlotConverter mapSlot, BlockPos putMapCoords, Vec3d putMapLocs, SlotConverter hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess) {
+        super(getProcess(mapSlot, putMapCoords, putMapLocs, hotbarSlot, relativeShulkerPos, nextProcess));
     }
 
     private static int calculateChestCoords() {

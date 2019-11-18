@@ -68,7 +68,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
                 //new BreakBlock(shulkerPos, true,
                         //new EditShulkerProcess(shulkerPos, hotbarSlot, new Epsilon(), true,
                 //new getMaps(targetPos, hotbarSlot, shulkerPos,
-                new putMap(putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
+                new PutMap(new SlotConverter(0, ContainerType.INVENTORY), putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
                         new ChatProcess("end", new Epsilon())));
 
     }
