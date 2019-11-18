@@ -25,15 +25,15 @@ import net.minecraft.item.Item;
  *
  */
 
-public class AbstractSlot extends SlotHelper {
+public class AbstractSlot extends SlotConverter {
 
     Item item;
     Integer slot;
 
-    SlotHelper startSearch;
+    SlotConverter startSearch;
     boolean topBottom;
 
-    public AbstractSlot(Item item, SlotHelper startSearching, boolean topToBottom) {
+    public AbstractSlot(Item item, SlotConverter startSearching, boolean topToBottom) {
         super(0, null);
         this.item = item;
         this.startSearch = startSearching;

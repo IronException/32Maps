@@ -21,7 +21,7 @@ import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
 import baritone.api.utils.input.Input;
 import baritone.process.sub.processes.helper.ContainerType;
-import baritone.process.sub.processes.helper.SlotHelper;
+import baritone.process.sub.processes.helper.SlotConverter;
 import baritone.utils.BlockStateInterface;
 import net.minecraft.block.BlockAir;
 import net.minecraft.util.math.BlockPos;
@@ -31,9 +31,9 @@ import java.util.Optional;
 
 public class PlaceBlock extends GoalNearProcess {
 
-    private SlotHelper hotbar;
+    private SlotConverter hotbar;
 
-    public PlaceBlock(BlockPos nearGoal, SlotHelper hotbar, SubProcess nextProcess) {
+    public PlaceBlock(BlockPos nearGoal, SlotConverter hotbar, SubProcess nextProcess) {
         super(nearGoal, 2, new OneTimeCommand(nextProcess) {
 
             @Override

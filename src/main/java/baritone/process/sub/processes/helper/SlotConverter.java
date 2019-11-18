@@ -19,12 +19,12 @@
 package baritone.process.sub.processes.helper;
 
 
-public class SlotHelper {
+public class SlotConverter {
 
     protected int slot;
     protected ContainerType as;
 
-    public SlotHelper(int slot, ContainerType as) {
+    public SlotConverter(int slot, ContainerType as) {
         this.slot = slot;
         this.as = as;
     }

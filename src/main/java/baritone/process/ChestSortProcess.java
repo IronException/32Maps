@@ -24,12 +24,9 @@ import baritone.api.process.IChestSortProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.process.sub.processes.*;
-import baritone.process.sub.processes.helper.AbstractSlot;
 import baritone.process.sub.processes.helper.ContainerType;
-import baritone.process.sub.processes.helper.SlotHelper;
+import baritone.process.sub.processes.helper.SlotConverter;
 import baritone.utils.BaritoneProcessHelper;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -41,7 +38,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public static BlockPos putMaps = new BlockPos(5, 5, 0);
     public static Vec3d putMapLocs = new Vec3d(0, 0, 2);
     public static Vec3i relativeShulkerPos = new Vec3i(3, -1, 0);
-    public static SlotHelper hotbarSlot = new SlotHelper(5, ContainerType.HOTBAR);
+    public static SlotConverter hotbarSlot = new SlotConverter(5, ContainerType.HOTBAR);
 
     public static BlockPos shulkerPos = new BlockPos(-10, 4, 10);
 
@@ -70,8 +67,8 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
                 new ChatProcess("start",
                 //new BreakBlock(shulkerPos, true,
                         //new EditShulkerProcess(shulkerPos, hotbarSlot, new Epsilon(), true,
-                new getMaps(targetPos, hotbarSlot, shulkerPos,
-                        // new putMap(putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
+                //new getMaps(targetPos, hotbarSlot, shulkerPos,
+                new putMap(putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
                         new ChatProcess("end", new Epsilon())));
 
     }

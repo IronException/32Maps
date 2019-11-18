@@ -18,7 +18,7 @@
 package baritone.process.sub.processes;
 
 import baritone.process.sub.processes.helper.ContainerType;
-import baritone.process.sub.processes.helper.SlotHelper;
+import baritone.process.sub.processes.helper.SlotConverter;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -32,13 +32,12 @@ import net.minecraft.util.math.Vec3i;
 public class putMap extends OneTimeCommand {
 
 
-    protected static SubProcess getProcess(BlockPos putMapCoords, Vec3d putMapLocs, SlotHelper hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess){
+    protected static SubProcess getProcess(BlockPos putMapCoords, Vec3d putMapLocs, SlotConverter hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess){
         putMapLocs = putMapLocs.scale(calculateChestCoords());
-        // chestSlot: new SlotHelper(calculateChestSlot(), ContainerType.NORMAL_CHEST),
-        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z), hotbarSlot, putMapCoords.add(relativeShulkerPos), new SwapSlot(hotbarSlot, new SlotHelper(calculateShulkerSlot(), ContainerType.NORMAL_CHEST), new Epsilon()), true, nextProcess);
+        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z), new SlotConverter(calculateChestSlot(), ContainerType.NORMAL_CHEST), hotbarSlot, putMapCoords.add(relativeShulkerPos), new SwapSlot(hotbarSlot, new SlotConverter(calculateShulkerSlot(), ContainerType.NORMAL_CHEST), new Epsilon()), true, nextProcess);
     }
 
-    public putMap(BlockPos putMapCoords, Vec3d putMapLocs, SlotHelper hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess) {
+    public putMap(BlockPos putMapCoords, Vec3d putMapLocs, SlotConverter hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess) {
         super(getProcess(putMapCoords, putMapLocs, hotbarSlot, relativeShulkerPos, nextProcess));
     }
 
