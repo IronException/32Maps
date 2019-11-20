@@ -65,7 +65,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
             rV = new PutMap(mapSlot, putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
                     new ChatProcess("finished sorting 1 map", new Epsilon()));
         } else {
-            rV = new getMaps(targetPos, hotbarSlot, shulkerPos,
+            rV = new GetMaps(targetPos, hotbarSlot, shulkerPos,
                     new ChatProcess("loaded maps", new Epsilon()));
         }
 

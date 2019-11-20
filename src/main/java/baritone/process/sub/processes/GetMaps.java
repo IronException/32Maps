@@ -24,9 +24,9 @@ import net.minecraft.util.math.BlockPos;
  * this process is for getting new maps.. so it is filling up the inventory with maps in a shulker and then continues with the next process
  * Maybe from the chest it could look for the first slot with a shulker... also it shouldnt put the shulker back...
  */
-public class getMaps extends OneTimeCommand {
+public class GetMaps extends OneTimeCommand {
 
-    public getMaps(BlockPos chestCoords, SlotConverter hotbarSlot, BlockPos placeShulker, SubProcess nextProcess) {
+    public GetMaps(BlockPos chestCoords, SlotConverter hotbarSlot, BlockPos placeShulker, SubProcess nextProcess) {
         // TODO take the first shulker in the chest not the first slot. =>
         super(new EditChestShulkerProcess(chestCoords, hotbarSlot, placeShulker, new SwapSlots(), false, nextProcess));
     }
