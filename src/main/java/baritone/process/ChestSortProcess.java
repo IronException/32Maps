@@ -24,10 +24,12 @@ import baritone.api.process.IChestSortProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.process.sub.processes.*;
+import baritone.process.sub.processes.helper.AbstractSlot;
 import baritone.process.sub.processes.helper.ChestHelper;
 import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotConverter;
 import baritone.utils.BaritoneProcessHelper;
+import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -59,11 +61,13 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
     public SubProcess getProcessBuild() {
         SubProcess rV;
-        if (ChestHelper.mapsInInv()) {
-            SlotConverter mapSlot = new SlotConverter(0, ContainerType.INVENTORY);
+        Item item = Item.getItemById(358);
+        int mapsLeft = ChestHelper.mapsInInv(item);
+        if (mapsLeft > 0) {
+            SlotConverter mapSlot = new AbstractSlot(item, new SlotConverter(0, ContainerType.INVENTORY), true);
             // how to do duplicate now?
             rV = new PutMap(mapSlot, putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
-                    new ChatProcess("finished sorting 1 map", new Epsilon()));
+                    new ChatProcess("finished sorting next map. " + mapsLeft + " maps are left", new Epsilon()));
         } else {
             rV = new GetMaps(targetPos, hotbarSlot, shulkerPos,
                     new ChatProcess("loaded maps", new Epsilon()));

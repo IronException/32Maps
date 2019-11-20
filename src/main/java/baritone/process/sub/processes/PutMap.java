@@ -17,6 +17,7 @@
 
 package baritone.process.sub.processes;
 
+import baritone.process.sub.processes.helper.ChestHelper;
 import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotConverter;
 import net.minecraft.util.math.BlockPos;
@@ -33,9 +34,9 @@ public class PutMap extends OneTimeCommand {
 
 
     protected static SubProcess getProcess(SlotConverter mapSlot, BlockPos putMapCoords, Vec3d putMapLocs, SlotConverter hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess){
-        putMapLocs = putMapLocs.scale(calculateChestCoords());
         int mapId = ChestHelper.convertMapId(mapSlot);
-        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z), new SlotConverter(calculateChestSlot(), ContainerType.NORMAL_CHEST), hotbarSlot, putMapCoords.add(relativeShulkerPos), new SwapSlot(mapSlot, new SlotConverter(calculateShulkerSlot(), ContainerType.NORMAL_CHEST), new Epsilon()), true, nextProcess);
+        putMapLocs = putMapLocs.scale(calculateChestCoords(mapId));
+        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z), new SlotConverter(calculateChestSlot(mapId), ContainerType.NORMAL_CHEST), hotbarSlot, putMapCoords.add(relativeShulkerPos), new SwapSlot(mapSlot, new SlotConverter(calculateShulkerSlot(mapId), ContainerType.NORMAL_CHEST), new Epsilon()), true, nextProcess);
     }
 
     public PutMap(SlotConverter mapSlot, BlockPos putMapCoords, Vec3d putMapLocs, SlotConverter hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess) {

@@ -24,6 +24,11 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.ContainerShulkerBox;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemMap;
+import net.minecraft.item.ItemStack;
+
+import java.util.Random;
 
 public class ChestHelper {
 
@@ -46,4 +51,13 @@ public class ChestHelper {
         return null;
     }
 
+    public static int mapsInInv(Item item) {
+        return ChestSortProcess.INSTANCE.ctx.player().inventory.mainInventory.stream().filter(stack -> item.equals(stack.getItem())).mapToInt(ItemStack::getCount).sum();
+    }
+
+
+    public static int convertMapId(SlotConverter mapSlot) {
+        // TODO return ((ItemMap) ChestSortProcess.INSTANCE.ctx.player().openContainer.getSlot(mapSlot.getSlotNow()).getStack().getItem()).getMetadata();
+        return new Random().nextInt(27);
+    }
 }
