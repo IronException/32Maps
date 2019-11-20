@@ -24,6 +24,7 @@ import baritone.api.process.IChestSortProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.process.sub.processes.*;
+import baritone.process.sub.processes.helper.ChestHelper;
 import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotConverter;
 import baritone.utils.BaritoneProcessHelper;
@@ -57,19 +58,33 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
 
     public SubProcess getProcessBuild() {
+        SubProcess rV;
+        if (ChestHelper.mapsInInv()) {
+            SlotConverter mapSlot = new SlotConverter(0, ContainerType.INVENTORY);
+            // how to do duplicate now?
+            rV = new PutMap(mapSlot, putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
+                    new ChatProcess("finished sorting 1 map", new Epsilon()));
+        } else {
+            rV = new getMaps(targetPos, hotbarSlot, shulkerPos,
+                    new ChatProcess("loaded maps", new Epsilon()));
+        }
+
+
+
+
         /*return new GoalNearProcess(targetPos, 2,
                 new EditChestShulkerProcess(targetPos, new Epsilon())
         ); // TODO its going to the same pos twice like this. so redo that....
         */
 
 
-        return
+        return rV;/*
                 new ChatProcess("start",
                 //new BreakBlock(shulkerPos, true,
                         //new EditShulkerProcess(shulkerPos, hotbarSlot, new Epsilon(), true,
                 //new getMaps(targetPos, hotbarSlot, shulkerPos,
                 new PutMap(new SlotConverter(0, ContainerType.INVENTORY), putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
-                        new ChatProcess("end", new Epsilon())));
+                        new ChatProcess("end", new Epsilon())));*/
 
     }
 
@@ -90,9 +105,12 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         // test wether maps in inv
 
-        if (this.process.finished())
-            this.active = false;
 
+
+        if (this.process.finished()) {
+            this.process = getProcessBuild();
+            //this.active = false;
+        }
 
         this.process.tick();
 
