@@ -62,7 +62,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public SubProcess getProcessBuild() {
         SubProcess rV;
         Item item = Item.getItemById(358);
-        int mapsLeft = ChestHelper.mapsInInv(item);
+        int mapsLeft = ChestHelper.itemsInInv(item);
         if (mapsLeft > 0) {
             SlotConverter mapSlot = new AbstractSlot(item, new SlotConverter(0, ContainerType.INVENTORY), true);
             // how to do duplicate now?

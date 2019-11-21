@@ -20,6 +20,7 @@ package baritone.process.sub.processes;
 import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
+import baritone.process.sub.processes.helper.ChestHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
@@ -32,7 +33,7 @@ public class PickUpItem extends ReturnProcess {
 
     Item toPickUp;
     BlockPos nearGoal, actual;
-    int items;
+    int itemsInInv;
 
     public PickUpItem(Item itemWeWant, SubProcess nextProcess) {
         super(nextProcess);
@@ -47,14 +48,14 @@ public class PickUpItem extends ReturnProcess {
     @Override
     public boolean isFinished() {
         // well, how do we know we picked up exactly that?
-        return droppedItemsScan(this.toPickUp, ctx.world()).size() < this.items;
+        return ChestHelper.itemsInInv(toPickUp) > this.itemsInInv;
     }
 
     @Override
     public void doTick() {
         if(actual == null) {
             List<BlockPos> blocks = droppedItemsScan(this.toPickUp, ctx.world());
-            this.items = blocks.size();
+            this.itemsInInv = ChestHelper.itemsInInv(toPickUp);
             blocks.sort(new Comparator<BlockPos>() {
                 @Override
                 public int compare(BlockPos o1, BlockPos o2) {

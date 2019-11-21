@@ -51,7 +51,7 @@ public class ChestHelper {
         return null;
     }
 
-    public static int mapsInInv(Item item) {
+    public static int itemsInInv(Item item) {
         return ChestSortProcess.INSTANCE.ctx.player().inventory.mainInventory.stream().filter(stack -> item.equals(stack.getItem())).mapToInt(ItemStack::getCount).sum();
     }
 
