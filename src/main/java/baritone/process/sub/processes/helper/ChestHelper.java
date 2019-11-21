@@ -57,7 +57,6 @@ public class ChestHelper {
 
 
     public static int convertMapId(SlotConverter mapSlot) {
-        // TODO return ((ItemMap) ChestSortProcess.INSTANCE.ctx.player().openContainer.getSlot(mapSlot.getSlotNow()).getStack().getItem()).getMetadata();
-        return new Random().nextInt(27);
+        return ChestSortProcess.INSTANCE.ctx.player().openContainer.getSlot(mapSlot.getSlotNow()).getStack().getMetadata();
     }
 }
