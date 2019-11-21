@@ -35,10 +35,11 @@ public class PickUpItem extends ReturnProcess {
     BlockPos nearGoal, actual;
     int itemsInInv;
 
-    public PickUpItem(Item itemWeWant, SubProcess nextProcess) {
+    public PickUpItem(Item itemWeWant, BlockPos nearGoal, SubProcess nextProcess) {
         super(nextProcess);
         // TODO need ro move this
         this.toPickUp = itemWeWant;
+        this.nearGoal = nearGoal;
     }
 
     public void setItem(Item item){

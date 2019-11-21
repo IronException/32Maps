@@ -35,7 +35,7 @@ public class BreakBlock extends GoalNearProcess {
 
     protected static SubProcess getProcess(BlockPos nearGoal, boolean pickUpItem, SubProcess nextProcess){
         if(pickUpItem)
-            nextProcess = new PickUpItem(null, nextProcess);
+            nextProcess = new PickUpItem(null, nearGoal, nextProcess);
 
         return new OneTimeCommand(nextProcess) {
 

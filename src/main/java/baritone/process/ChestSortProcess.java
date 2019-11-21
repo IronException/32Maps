@@ -67,7 +67,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
             SlotConverter mapSlot = new AbstractSlot(item, new SlotConverter(0, ContainerType.INVENTORY), true);
             // how to do duplicate now?
             rV = new PutMap(mapSlot, putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
-                    new ChatProcess("finished sorting map_ " + ChestHelper.convertMapId(mapSlot) + ". " + mapsLeft + " maps are left", new Epsilon()));
+                    new ChatProcess("finished sorting map_" + ChestHelper.convertMapId(mapSlot) + ". " + mapsLeft + " maps are left", new Epsilon()));
         } else {
             rV = new GetMaps(targetPos, hotbarSlot, shulkerPos,
                     new ChatProcess("loaded maps", new Epsilon()));
