@@ -52,13 +52,11 @@ public class AbstractSlot extends SlotConverter {
                 for (int i = startSearch.getSlotIn(in); i < ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size(); i++)
                     if (isTheOne(i)) {
                         saveNewSlot(i);
-                        ChestSortProcess.INSTANCE.logDirect("got to slot in 1st " + i + " and calculated " + toString());
                         return this.slot;
                     }
                 for (int i = 0; i < startSearch.getSlotIn(in); i++)
                     if (isTheOne(i)) {
                         saveNewSlot(i);
-                        ChestSortProcess.INSTANCE.logDirect("got to slot in 2nd " + i + " and calculated " + toString());
                         return this.slot;
                     }
             } else {
@@ -80,7 +78,9 @@ public class AbstractSlot extends SlotConverter {
 
     public void saveNewSlot(int slot){
         // TODO we assume that every inv is 27 slots big for simplicity. If this whole program would be reused for something else special cases like hoppers also have to be treaded differently by considering ChestHelper.getContainer()
-        slot = -9; // this is so wrong but somehow sometimes minecraft inv is counted and sometimes not? (I think and hope I think so not all code is broken...) <- armorslots + crafting slots + 2nd hand are also in there smh..
+
+        if(ChestHelper.getContainer() == ContainerType.INVENTORY)
+            slot -= 9;// this is so wrong but somehow sometimes minecraft inv is counted and sometimes not? (I think and hope I think so not all code is broken...) <- armorslots + crafting slots + 2nd hand are also in there smh..
         super.slot = slot % 27;
         switch (slot / 27){
             case 0:
@@ -100,6 +100,6 @@ public class AbstractSlot extends SlotConverter {
 
     @Override
     public String toString() {
-        return "AbstractSlot: " + this.slot + " (" + this.getSlotNow() + ") (for " + this.item + ")";
+        return "AbstractSlot: " + this.slot + " (" + super.getSlotNow() + ") (for " + this.item + ")";
     }
 }

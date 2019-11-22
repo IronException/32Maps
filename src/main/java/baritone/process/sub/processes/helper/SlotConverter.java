@@ -34,7 +34,11 @@ public class SlotConverter {
     }
 
     public int getSlotIn(ContainerType in) {
-        return in.getSlots() - as.getSlots() + this.slot;
+        int rV = in.getSlots() - as.getSlots();
+        rV += this.slot;
+        if(in == ContainerType.INVENTORY)
+            rV += 9;
+        return rV;
     }
 
     @Override
