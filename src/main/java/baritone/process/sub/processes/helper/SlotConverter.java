@@ -37,6 +37,10 @@ public class SlotConverter {
         return in.getSlots() - as.getSlots() + this.slot;
     }
 
+    @Override
+    public String toString() {
+        return "        slot: " + this.slot + " (" + this.getSlotNow() + ")";
+    }
 
 }
 

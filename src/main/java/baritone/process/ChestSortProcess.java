@@ -121,7 +121,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         PathingCommand rV = process.getReturn();
         if (rV == null) {
-            logDirect("No SubProcess returned a PathingCommand. THIS HAS TO BE FIXED");
+            //logDirect("No SubProcess returned a PathingCommand. THIS HAS TO BE FIXED");
             // could also be Request Pause
             rV = new PathingCommand(new GoalBlock(ctx.playerFeet()), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
         }

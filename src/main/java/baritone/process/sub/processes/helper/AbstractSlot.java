@@ -28,7 +28,7 @@ import net.minecraft.item.Item;
 public class AbstractSlot extends SlotConverter {
 
     Item item;
-    Integer slot;
+    // slot and as from super are there for when the slot is found
 
     SlotConverter startSearch;
     boolean topBottom;
@@ -47,30 +47,59 @@ public class AbstractSlot extends SlotConverter {
 
     @Override
     public int getSlotIn(ContainerType in) {
-        if(slot == null)
+        if(as == null){
             if (topBottom) {
                 for (int i = startSearch.getSlotIn(in); i < ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size(); i++)
                     if (isTheOne(i)) {
-                        this.slot = i;
+                        saveNewSlot(i);
+                        ChestSortProcess.INSTANCE.logDirect("got to slot in 1st " + i + " and calculated " + toString());
                         return this.slot;
                     }
                 for (int i = 0; i < startSearch.getSlotIn(in); i++)
                     if (isTheOne(i)) {
-                        this.slot = i;
+                        saveNewSlot(i);
+                        ChestSortProcess.INSTANCE.logDirect("got to slot in 2nd " + i + " and calculated " + toString());
                         return this.slot;
                     }
             } else {
                 for (int i = startSearch.getSlotIn(in); i >= 0; i--)
                     if (isTheOne(i)) {
-                        this.slot = i;
+                        saveNewSlot(i);
                         return this.slot;
                     }
                 for (int i = ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size() - 1; i > startSearch.getSlotIn(in); i--)
                     if (isTheOne(i)) {
-                        this.slot = i;
+                        saveNewSlot(i);
                         return this.slot;
                     }
             }
-        return this.slot;
+            ChestSortProcess.INSTANCE.logDirect("terminated search for abstract slot... (" + item);
+        }
+        return super.getSlotIn(in);
+    }
+
+    public void saveNewSlot(int slot){
+        // TODO we assume that every inv is 27 slots big for simplicity. If this whole program would be reused for something else special cases like hoppers also have to be treaded differently by considering ChestHelper.getContainer()
+        slot = -9; // this is so wrong but somehow sometimes minecraft inv is counted and sometimes not? (I think and hope I think so not all code is broken...) <- armorslots + crafting slots + 2nd hand are also in there smh..
+        super.slot = slot % 27;
+        switch (slot / 27){
+            case 0:
+                super.as = ChestHelper.getContainer();
+                break;
+            case 1:
+                if(ChestHelper.getContainer() == ContainerType.INVENTORY) {
+                    super.as = ContainerType.HOTBAR;
+                } else {
+                    // TODO there are ofc more cases now but I hope just the case that we are in a normal chest is enough...
+                    super.as = ContainerType.INVENTORY;
+                }
+
+        }
+    }
+
+
+    @Override
+    public String toString() {
+        return "AbstractSlot: " + this.slot + " (" + this.getSlotNow() + ") (for " + this.item + ")";
     }
 }

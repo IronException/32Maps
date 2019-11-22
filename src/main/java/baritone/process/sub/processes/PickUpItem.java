@@ -65,8 +65,6 @@ public class PickUpItem extends ReturnProcess {
                 }
             });
 
-            logDirect("item: " + toPickUp);
-            logDirect(blocks.size() + " items");
             if(!blocks.isEmpty())
                 actual = blocks.get(0);
         }
