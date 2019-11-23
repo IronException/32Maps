@@ -24,26 +24,27 @@ import baritone.api.process.IChestSortProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import baritone.process.sub.processes.*;
-import baritone.process.sub.processes.helper.AbstractSlot;
-import baritone.process.sub.processes.helper.ChestHelper;
-import baritone.process.sub.processes.helper.ContainerType;
-import baritone.process.sub.processes.helper.SlotConverter;
+import baritone.process.sub.processes.helper.*;
 import baritone.utils.BaritoneProcessHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+
 public final class ChestSortProcess extends BaritoneProcessHelper implements IChestSortProcess, AbstractGameEventListener {
     private static final PathingCommand NO_PATH = new PathingCommand(null, PathingCommandType.DEFER);
 
-    public static BlockPos targetPos = new BlockPos(0, 5, 0);
-    public static BlockPos putMaps = new BlockPos(5, 5, 0);
-    public static Vec3d putMapLocs = new Vec3d(0, 0, 2);
-    public static Vec3i relativeShulkerPos = new Vec3i(3, -1, 0);
-    public static SlotConverter hotbarSlot = new SlotConverter(5, ContainerType.HOTBAR);
+    public static BlockPos targetPos = Config.targetPos;
+    public static BlockPos putMaps = Config.putMaps;
+    public static Vec3d putMapLocs = Config.putMapLocs;
+    public static Vec3i relativeShulkerPos = Config.relativeShulkerPos;
+    public static SlotConverter hotbarSlot = Config.hotbarSlot;
 
-    public static BlockPos shulkerPos = new BlockPos(-10, 4, 10);
+    public static BlockPos shulkerPos = Config.shulkerPos;
 
 
     private boolean active = false;
@@ -65,6 +66,12 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         int mapsLeft = ChestHelper.itemsInInv(item);
         if (mapsLeft > 0) {
             SlotConverter mapSlot = new AbstractSlot(item, new SlotConverter(0, ContainerType.INVENTORY), true);
+
+            int mapId = ChestHelper.convertMapId(mapSlot);
+
+            logMapId(mapId);
+
+
             // how to do duplicate now?
             rV = new PutMap(mapSlot, putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
                     new ChatProcess("finished sorting map_" + ChestHelper.convertMapId(mapSlot) + ". " + mapsLeft + " maps are left", new Epsilon()));
@@ -90,6 +97,42 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
                 new PutMap(new SlotConverter(0, ContainerType.INVENTORY), putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
                         new ChatProcess("end", new Epsilon())));*/
 
+    }
+
+    // read file one line at a time
+    // replace line as you read the file and store updated lines in StringBuffer
+    // overwrite the file with the new lines
+    public static void logMapId(int mapId) {
+        try {
+            // input the (modified) file content to the StringBuffer "input"
+            BufferedReader file = new BufferedReader(new FileReader("aMaps.txt"));
+            StringBuffer inputBuffer = new StringBuffer();
+            String line;
+
+            boolean gotIt = false;
+            while ((line = file.readLine()) != null) {
+                if(line.split(":")[0].equals(mapId + "")) {
+                    line += System.currentTimeMillis() + ", ";
+                    gotIt = true;
+                }
+                inputBuffer.append(line);
+                inputBuffer.append('\n');
+            }
+
+            if(!gotIt)
+                inputBuffer.append(mapId + ": " + System.currentTimeMillis() + ", \n");
+
+            file.close();
+
+            // write the new string with the replaced line OVER the same file
+            FileOutputStream fileOut = new FileOutputStream("notes.txt");
+            fileOut.write(inputBuffer.toString().getBytes());
+            fileOut.close();
+            ChestSortProcess.INSTANCE.logDirect("FINISHED SAVING FILE");
+
+        } catch (Exception e) {
+            System.out.println("Problem reading file.");
+        }
     }
 
 

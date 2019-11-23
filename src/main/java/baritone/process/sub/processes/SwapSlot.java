@@ -54,6 +54,10 @@ public class SwapSlot extends SubProcess {
         this.pressSlot(this.slot1);
         break;
       case 1:
+        logDirect("swapping slots:");
+        logDirect(this.slot1 + "");
+        logDirect(this.slot2 + "");
+        logDirect("");
         this.pressSlot(this.slot2);
         break;
     }
