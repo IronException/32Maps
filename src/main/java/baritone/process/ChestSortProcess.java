@@ -38,6 +38,8 @@ import java.io.FileReader;
 public final class ChestSortProcess extends BaritoneProcessHelper implements IChestSortProcess, AbstractGameEventListener {
     private static final PathingCommand NO_PATH = new PathingCommand(null, PathingCommandType.DEFER);
 
+    public static String filePath = Config.filePath;
+
     public static BlockPos targetPos = Config.targetPos;
     public static BlockPos putMaps = Config.putMaps;
     public static Vec3d putMapLocs = Config.putMapLocs;
@@ -105,7 +107,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public static void logMapId(int mapId) {
         try {
             // input the (modified) file content to the StringBuffer "input"
-            BufferedReader file = new BufferedReader(new FileReader("aMaps.txt"));
+            BufferedReader file = new BufferedReader(new FileReader(filePath));
             StringBuffer inputBuffer = new StringBuffer();
             String line;
 
@@ -125,13 +127,12 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
             file.close();
 
             // write the new string with the replaced line OVER the same file
-            FileOutputStream fileOut = new FileOutputStream("notes.txt");
+            FileOutputStream fileOut = new FileOutputStream(filePath);
             fileOut.write(inputBuffer.toString().getBytes());
             fileOut.close();
-            ChestSortProcess.INSTANCE.logDirect("FINISHED SAVING FILE");
 
         } catch (Exception e) {
-            System.out.println("Problem reading file.");
+            e.printStackTrace();
         }
     }
 
@@ -159,8 +160,13 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
             //this.active = false;
         }
 
-        this.process.tick();
-
+        try {
+            this.process.tick();
+        } catch (Exception e){
+            e.printStackTrace();
+            logDirect("is done?... check error...");
+            active = false;
+        }
 
         PathingCommand rV = process.getReturn();
         if (rV == null) {
