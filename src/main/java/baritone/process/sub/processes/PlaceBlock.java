@@ -17,6 +17,10 @@
 
 package baritone.process.sub.processes;
 
+import baritone.api.pathing.goals.GoalNear;
+import baritone.api.pathing.goals.GoalRunAway;
+import baritone.api.process.PathingCommand;
+import baritone.api.process.PathingCommandType;
 import baritone.api.utils.Rotation;
 import baritone.api.utils.RotationUtils;
 import baritone.api.utils.input.Input;
@@ -67,6 +71,14 @@ public class PlaceBlock extends GoalNearProcess {
             }
 
         }
+    }
+
+    @Override
+    public PathingCommand generateReturn() {
+
+        if(ctx.playerFeet().getDistance(super.nearGoal.getX(), super.nearGoal.getY(), super.nearGoal.getZ()) < 1.2)
+            return new PathingCommand(new GoalRunAway(range, nearGoal), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
+        return new PathingCommand(new GoalNear(nearGoal, range), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
     }
 
 

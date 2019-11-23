@@ -72,13 +72,15 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         if (mapsLeft > 0) {
             SlotConverter mapSlot = new AbstractSlot(item, new SlotConverter(0, ContainerType.INVENTORY), true);
 
-            logMapId(ChestHelper.convertMapId(mapSlot));
+            int mapId = ChestHelper.convertMapId(mapSlot);
+            logMapId(mapId);
 
-
-            // how to do duplicate now?
-            rV = new PutMap(mapSlot, putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
-                    new ChatProcess("finished sorting map_" + ChestHelper.convertMapId(mapSlot) + ". " + mapsLeft + " maps are left", new Epsilon()));
-
+            if (invalidId(mapId))
+                rV = new Epsilon();
+            else
+                // how to do duplicate now?
+                rV = new PutMap(mapSlot, putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
+                        new ChatProcess("finished sorting map_" + mapId + ". " + mapsLeft + " maps are left", new Epsilon()));
 
 
         } else {
@@ -105,6 +107,10 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
     }
 
+    private boolean invalidId(int mapId) {
+        return mapId < 0;
+    }
+
     // read file one line at a time
     // replace line as you read the file and store updated lines in StringBuffer
     // overwrite the file with the new lines
@@ -117,7 +123,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
             boolean gotIt = false;
             while ((line = file.readLine()) != null) {
-                if(line.split(":")[0].equals(mapId + "")) {
+                if (line.split(":")[0].equals(mapId + "")) {
                     line += System.currentTimeMillis() + ", ";
                     gotIt = true;
                 }
@@ -125,7 +131,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
                 inputBuffer.append('\n');
             }
 
-            if(!gotIt)
+            if (!gotIt)
                 inputBuffer.append(mapId + ": " + System.currentTimeMillis() + ", \n");
 
             file.close();
@@ -158,7 +164,6 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         // test wether maps in inv
 
 
-
         if (this.process.finished()) {
             this.process = getProcessBuild();
             //this.active = false;
@@ -166,7 +171,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         try {
             this.process.tick();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             logDirect("is done?... check error...");
             active = false;
