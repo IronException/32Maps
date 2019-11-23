@@ -75,10 +75,10 @@ public class PlaceBlock extends GoalNearProcess {
 
     @Override
     public PathingCommand generateReturn() {
+        if(ctx.playerFeet().getDistance(super.nearGoal.getX(), super.nearGoal.getY(), super.nearGoal.getZ()) < 1.42)
+            return new PathingCommand(new GoalRunAway(range, nearGoal), PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
 
-        if(ctx.playerFeet().getDistance(super.nearGoal.getX(), super.nearGoal.getY(), super.nearGoal.getZ()) < 1.2)
-            return new PathingCommand(new GoalRunAway(range, nearGoal), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
-        return new PathingCommand(new GoalNear(nearGoal, range), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
+        return new PathingCommand(new GoalNear(nearGoal, range), PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
     }
 
 
