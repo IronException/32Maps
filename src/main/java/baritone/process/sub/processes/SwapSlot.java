@@ -17,6 +17,7 @@
 
 package baritone.process.sub.processes;
 
+import baritone.process.ChestSortProcess;
 import baritone.process.sub.processes.helper.SlotConverter;
 import net.minecraft.inventory.ClickType;
 
@@ -25,51 +26,54 @@ import net.minecraft.inventory.ClickType;
  */
 public class SwapSlot extends SubProcess {
 
-  protected int phase;
-  protected SlotConverter slot1, slot2;
+    protected int phase;
+    protected SlotConverter slot1, slot2;
 
-  public SwapSlot(SlotConverter slot1, SlotConverter slot2, SubProcess nextProcess) {
-    super(nextProcess);
-    
-    this.phase = 0;
-    
-    this.slot1 = slot1;
-    this.slot2 = slot2;
-  }
+    public SwapSlot(SlotConverter slot1, SlotConverter slot2, SubProcess nextProcess) {
+        super(nextProcess);
+
+        this.phase = 0;
+
+        this.slot1 = slot1;
+        this.slot2 = slot2;
+    }
 
     /**
-   * we are done after phase 2
-   */
-  @Override
-  public boolean isFinished() {
-    return this.phase > 4; // 2 ticks extra just in case
-  }
-
-  @Override
-  public void doTick() {
-
-    switch (phase) {
-      case 0:
-      case 2:
-        this.pressSlot(this.slot1);
-        break;
-      case 1:
-        logDirect("swapping slots:");
-        logDirect(this.slot1 + "");
-        logDirect(this.slot2 + "");
-        logDirect("");
-        this.pressSlot(this.slot2);
-        break;
+     * we are done after phase 2
+     */
+    @Override
+    public boolean isFinished() {
+        return this.phase > 4; // 2 ticks extra just in case
     }
-    phase ++;
-  }
 
-  protected void pressSlot(SlotConverter slot) {
-    this.pressSlot(slot.getSlotNow());
-  }
+    @Override
+    public void doTick() {
+        switch (phase) {
+            case 0:
+            case 2:
+                this.pressSlot(this.slot1);
+                break;
+            case 1:
+                this.pressSlot(this.slot2);
+                if (ChestSortProcess.debug) {
+                    logDirect("swapping slots:");
+                    logDirect(this.slot1 + "");
+                    logDirect(this.slot2 + "");
 
-  protected void pressSlot(int slot) {
-    super.ctx.playerController().windowClick(super.ctx.player().openContainer.windowId, slot, 0, ClickType.PICKUP, super.ctx.player());
-  }
-  
+                    logDirect("");
+                }
+
+                break;
+        }
+        phase++;
+    }
+
+    protected void pressSlot(SlotConverter slot) {
+        this.pressSlot(slot.getSlotNow());
+    }
+
+    protected void pressSlot(int slot) {
+        super.ctx.playerController().windowClick(super.ctx.player().openContainer.windowId, slot, 0, ClickType.PICKUP, super.ctx.player());
+    }
+
 }

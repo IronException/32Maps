@@ -160,7 +160,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         if (this.process.finished()) {
             this.process = getProcessBuild();
-            this.active = false;
+            //this.active = false;
         }
 
         try {
