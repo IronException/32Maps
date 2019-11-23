@@ -30,9 +30,15 @@ import net.minecraft.util.math.BlockPos;
  */
 public class GetMaps extends OneTimeCommand {
 
-    public GetMaps(BlockPos chestCoords, SlotConverter hotbarSlot, BlockPos placeShulker, SubProcess nextProcess) {
+    public GetMaps(BlockPos chestCoords, SlotConverter hotbarSlot, BlockPos placeShulker, BlockPos trashCoords, SubProcess nextProcess) {
         // TODO take the first shulker in the chest not the first slot. =>
-        super(new EditChestShulkerProcess(chestCoords, new AbstractSlot(Item.getItemFromBlock(Blocks.GRAY_SHULKER_BOX), new SlotConverter(0, ContainerType.NORMAL_CHEST), true), hotbarSlot, placeShulker, new SwapSlots(), false, nextProcess));
+        super(new MultiProcess(new SubProcess[]{ new EditChestShulkerProcess(chestCoords, hotbarSlot, placeShulker, new SwapSlots(), false,
+                new PickUpItem(Item.getItemFromBlock(Blocks.PURPLE_SHULKER_BOX), placeShulker, new Epsilon())),
+        new DoInContainerProcess(trashCoords,
+                new SwapSlot(new AbstractSlot(Item.getItemFromBlock(Blocks.AIR), new SlotConverter(0, ContainerType.NORMAL_CHEST), true),
+                        new AbstractSlot(Item.getItemFromBlock(Blocks.PURPLE_SHULKER_BOX), new SlotConverter(0, ContainerType.HOTBAR), true), new Epsilon()),
+                nextProcess)}));
+
     }
 
     @Override

@@ -47,6 +47,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     public static Vec3d putMapLocs = Config.putMapLocs;
     public static Vec3i relativeShulkerPos = Config.relativeShulkerPos;
     public static SlotConverter hotbarSlot = Config.hotbarSlot;
+    public static BlockPos trashCoords = Config.trashCoords;
 
     public static BlockPos shulkerPos = Config.shulkerPos;
 
@@ -81,7 +82,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
 
         } else {
-            rV = new GetMaps(targetPos, hotbarSlot, shulkerPos,
+            rV = new GetMaps(targetPos, hotbarSlot, shulkerPos, trashCoords,
                     new ChatProcess("loaded maps", new Epsilon()));
         }
 
