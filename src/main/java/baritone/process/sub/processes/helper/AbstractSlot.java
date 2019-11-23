@@ -52,27 +52,28 @@ public class AbstractSlot extends SlotConverter {
                 for (int i = startSearch.getSlotIn(in); i < ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size(); i++)
                     if (isTheOne(i)) {
                         saveNewSlot(i);
-                        ChestSortProcess.INSTANCE.logDirect("got slot: " + i + " and converted to " + this.toString());
-                        return this.slot;
+                        if(ChestSortProcess.debug)
+                            ChestSortProcess.INSTANCE.logDirect("got slot: " + i + " and converted to " + this.toString());
+                        return super.getSlotIn(in);
                     }
                 for (int i = 0; i < startSearch.getSlotIn(in); i++)
                     if (isTheOne(i)) {
                         saveNewSlot(i);
-                        return this.slot;
+                        return super.getSlotIn(in);
                     }
             } else {
                 for (int i = startSearch.getSlotIn(in); i >= 0; i--)
                     if (isTheOne(i)) {
                         saveNewSlot(i);
-                        return this.slot;
+                        return super.getSlotIn(in);
                     }
                 for (int i = ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size() - 1; i > startSearch.getSlotIn(in); i--)
                     if (isTheOne(i)) {
                         saveNewSlot(i);
-                        return this.slot;
+                        return super.getSlotIn(in);
                     }
             }
-            ChestSortProcess.INSTANCE.logDirect("terminated search for abstract slot... (" + item);
+            ChestSortProcess.INSTANCE.logDirect("WARNING: terminated search for abstract slot... (" + item);
         }
         return super.getSlotIn(in);
     }

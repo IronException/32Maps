@@ -38,6 +38,8 @@ import java.io.FileReader;
 public final class ChestSortProcess extends BaritoneProcessHelper implements IChestSortProcess, AbstractGameEventListener {
     private static final PathingCommand NO_PATH = new PathingCommand(null, PathingCommandType.DEFER);
 
+    public static boolean debug = false;
+
     public static String filePath = Config.filePath;
 
     public static BlockPos targetPos = Config.targetPos;
@@ -69,14 +71,15 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
         if (mapsLeft > 0) {
             SlotConverter mapSlot = new AbstractSlot(item, new SlotConverter(0, ContainerType.INVENTORY), true);
 
-            int mapId = ChestHelper.convertMapId(mapSlot);
-
-            logMapId(mapId);
+            logMapId(ChestHelper.convertMapId(mapSlot));
 
 
             // how to do duplicate now?
             rV = new PutMap(mapSlot, putMaps, putMapLocs, hotbarSlot, relativeShulkerPos,
                     new ChatProcess("finished sorting map_" + ChestHelper.convertMapId(mapSlot) + ". " + mapsLeft + " maps are left", new Epsilon()));
+
+
+
         } else {
             rV = new GetMaps(targetPos, hotbarSlot, shulkerPos,
                     new ChatProcess("loaded maps", new Epsilon()));
@@ -157,7 +160,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
         if (this.process.finished()) {
             this.process = getProcessBuild();
-            //this.active = false;
+            this.active = false;
         }
 
         try {

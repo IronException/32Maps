@@ -17,18 +17,14 @@
 
 package baritone.process.sub.processes.helper;
 
-import baritone.api.utils.IPlayerContext;
 import baritone.process.ChestSortProcess;
-import net.minecraft.client.player.inventory.ContainerLocalMenu;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.ContainerShulkerBox;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
 
-import java.util.Random;
 
 public class ChestHelper {
 

@@ -36,11 +36,17 @@ public class PutMap extends OneTimeCommand {
 
     protected static SubProcess getProcess(SlotConverter mapSlot, BlockPos putMapCoords, Vec3d putMapLocs, SlotConverter hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess){
         int mapId = ChestHelper.convertMapId(mapSlot);
-        ChestSortProcess.INSTANCE.logDirect("calculated " + mapId + " at slot " + mapSlot + " to:");
-        ChestSortProcess.INSTANCE.logDirect(calculateChestCoords(mapId) + " / " + calculateChestSlot(mapId) + " / " + calculateShulkerSlot(mapId));
-        ChestSortProcess.INSTANCE.logDirect("");
+        if(ChestSortProcess.debug) {
+            ChestSortProcess.INSTANCE.logDirect("calculated " + mapId + " at slot " + mapSlot + " to:");
+            ChestSortProcess.INSTANCE.logDirect(calculateChestCoords(mapId) + " / " + calculateChestSlot(mapId) + " / " + calculateShulkerSlot(mapId));
+            ChestSortProcess.INSTANCE.logDirect("");
+        }
         putMapLocs = putMapLocs.scale(calculateChestCoords(mapId));
-        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z), new SlotConverter(calculateChestSlot(mapId), ContainerType.NORMAL_CHEST), hotbarSlot, putMapCoords.add(relativeShulkerPos), new ChatProcess("start swapping", new SwapSlot(mapSlot, new SlotConverter(calculateShulkerSlot(mapId), ContainerType.NORMAL_CHEST), new ChatProcess("stop swapping", new Epsilon()))), true, nextProcess);
+        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z),
+                new SlotConverter(calculateChestSlot(mapId), ContainerType.NORMAL_CHEST),
+                hotbarSlot, putMapCoords.add(relativeShulkerPos),
+                new SwapSlot(mapSlot, new SlotConverter(calculateShulkerSlot(mapId), ContainerType.NORMAL_CHEST), new Epsilon()),
+                true, nextProcess);
     }
 
     public PutMap(SlotConverter mapSlot, BlockPos putMapCoords, Vec3d putMapLocs, SlotConverter hotbarSlot, Vec3i relativeShulkerPos, SubProcess nextProcess) {
