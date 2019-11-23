@@ -54,25 +54,23 @@ public class PickUpItem extends ReturnProcess {
 
     @Override
     public void doTick() {
-        if(actual == null) {
-            List<BlockPos> blocks = droppedItemsScan(this.toPickUp, ctx.world());
-            this.itemsInInv = ChestHelper.itemsInInv(toPickUp);
-            blocks.sort(new Comparator<BlockPos>() {
-                @Override
-                public int compare(BlockPos o1, BlockPos o2) {
-                    return (int) (o1.distanceSq((double) nearGoal.getX(), (double) nearGoal.getY(), (double) nearGoal.getZ())
-                                - o2.distanceSq((double) nearGoal.getX(), (double) nearGoal.getY(), (double) nearGoal.getZ()));
-                }
-            });
+        List<BlockPos> blocks = droppedItemsScan(this.toPickUp, ctx.world());
+        this.itemsInInv = ChestHelper.itemsInInv(toPickUp);
+        blocks.sort(new Comparator<BlockPos>() {
+            @Override
+            public int compare(BlockPos o1, BlockPos o2) {
+                return (int) (o1.distanceSq((double) nearGoal.getX(), (double) nearGoal.getY(), (double) nearGoal.getZ())
+                        - o2.distanceSq((double) nearGoal.getX(), (double) nearGoal.getY(), (double) nearGoal.getZ()));
+            }
+        });
 
-            if(!blocks.isEmpty())
-                actual = blocks.get(0);
-        }
+        if (!blocks.isEmpty())
+            actual = blocks.get(0);
     }
 
     @Override
     public PathingCommand generateReturn() {
-        if(this.actual == null)
+        if (this.actual == null)
             return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
         return new PathingCommand(new GoalBlock(this.actual), PathingCommandType.REVALIDATE_GOAL_AND_PATH);
     }
