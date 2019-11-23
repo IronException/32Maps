@@ -52,6 +52,7 @@ public class AbstractSlot extends SlotConverter {
                 for (int i = startSearch.getSlotIn(in); i < ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size(); i++)
                     if (isTheOne(i)) {
                         saveNewSlot(i);
+                        ChestSortProcess.INSTANCE.logDirect("got slot: " + i + " and converted to " + this.toString());
                         return this.slot;
                     }
                 for (int i = 0; i < startSearch.getSlotIn(in); i++)
@@ -93,6 +94,14 @@ public class AbstractSlot extends SlotConverter {
                     // TODO there are ofc more cases now but I hope just the case that we are in a normal chest is enough...
                     super.as = ContainerType.INVENTORY;
                 }
+                break;
+            case 2:
+                if(ChestHelper.getContainer() == ContainerType.NORMAL_CHEST) {
+                    super.as = ContainerType.HOTBAR;
+                } else {
+                    super.as = ContainerType.INVENTORY;
+                }
+                break;
 
         }
     }
