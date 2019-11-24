@@ -38,7 +38,7 @@ public class PlaceBlock extends GoalNearProcess {
     private SlotConverter hotbar;
 
     public PlaceBlock(BlockPos nearGoal, SlotConverter hotbar, SubProcess nextProcess) {
-        super(nearGoal, 2, new OneTimeCommand(nextProcess) {
+        super(nearGoal, 3, new OneTimeCommand(nextProcess) {
 
             @Override
             public void doTick() {
@@ -75,7 +75,7 @@ public class PlaceBlock extends GoalNearProcess {
 
     @Override
     public PathingCommand generateReturn() {
-        if(ctx.playerFeet().getDistance(super.nearGoal.getX(), super.nearGoal.getY(), super.nearGoal.getZ()) < 1.42)
+        if(super.nearGoal.distanceSqToCenter(ctx.player().posX, ctx.player().posY, ctx.player().posZ) < range)
             return new PathingCommand(new GoalRunAway(range, nearGoal), PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
 
         return new PathingCommand(new GoalNear(nearGoal, range), PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
