@@ -38,7 +38,7 @@ import java.io.FileReader;
 public final class ChestSortProcess extends BaritoneProcessHelper implements IChestSortProcess, AbstractGameEventListener {
     private static final PathingCommand NO_PATH = new PathingCommand(null, PathingCommandType.DEFER);
 
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     public static String filePath = Config.filePath;
 

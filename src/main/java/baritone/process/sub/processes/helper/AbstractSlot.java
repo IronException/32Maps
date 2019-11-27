@@ -42,7 +42,7 @@ public class AbstractSlot extends SlotConverter {
 
 
     protected boolean isTheOne(int i) {
-        return ChestSortProcess.INSTANCE.ctx.player().openContainer.getSlot(i).getStack().getItem().equals(this.item);
+        return ChestHelper.hasSlotItem(new SlotConverter(i, ChestHelper.getContainer()), this.item);
     }
 
     @Override

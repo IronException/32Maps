@@ -52,7 +52,15 @@ public class ChestHelper {
     }
 
 
+    public static ItemStack getItemStackAt(SlotConverter slot){
+        return ChestSortProcess.INSTANCE.ctx.player().openContainer.getSlot(slot.getSlotNow()).getStack();
+    }
+
+    public static boolean hasSlotItem(SlotConverter slot, Item item){
+        return getItemStackAt(slot).getItem().equals(item);
+    }
+
     public static int convertMapId(SlotConverter mapSlot) {
-        return ChestSortProcess.INSTANCE.ctx.player().openContainer.getSlot(mapSlot.getSlotNow()).getStack().getMetadata();
+        return getItemStackAt(mapSlot).getMetadata();
     }
 }

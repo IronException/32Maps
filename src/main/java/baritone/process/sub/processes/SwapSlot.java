@@ -18,8 +18,11 @@
 package baritone.process.sub.processes;
 
 import baritone.process.ChestSortProcess;
+import baritone.process.sub.processes.helper.ChestHelper;
 import baritone.process.sub.processes.helper.SlotConverter;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ClickType;
+import net.minecraft.item.Item;
 
 /**
  * you need to have your inventory open for this to work
@@ -28,14 +31,23 @@ public class SwapSlot extends SubProcess {
 
     protected int phase;
     protected SlotConverter slot1, slot2;
+    protected boolean putBack;
+
+    protected int pauseTicks = 5;
 
     public SwapSlot(SlotConverter slot1, SlotConverter slot2, SubProcess nextProcess) {
+        this(slot1, slot2, true, nextProcess);
+    }
+
+    public SwapSlot(SlotConverter slot1, SlotConverter slot2, boolean putBack, SubProcess nextProcess) {
         super(nextProcess);
 
         this.phase = 0;
 
         this.slot1 = slot1;
         this.slot2 = slot2;
+
+        this.putBack = putBack;
     }
 
     /**
@@ -43,29 +55,38 @@ public class SwapSlot extends SubProcess {
      */
     @Override
     public boolean isFinished() {
-        return this.phase > 4; // 2 ticks extra just in case
+        return this.phase > pauseTicks * 4; // 2 ticks extra just in case
     }
 
     @Override
     public void doTick() {
-        switch (phase) {
-            case 0:
-            case 2:
-                this.pressSlot(this.slot1);
-                break;
-            case 1:
-                this.pressSlot(this.slot2);
-                if (ChestSortProcess.debug) {
-                    logDirect("swapping slots:");
-                    logDirect(this.slot1 + "");
-                    logDirect(this.slot2 + "");
+        /**
+         * find out what slot1 and slot2 is:
+         * when having a shulker it behaves weird and also for when there is no item / an item when you put it back..
+         * what do if you have a shulker?
+         *
+         */
 
-                    logDirect("");
+
+        if(phase == pauseTicks * 1){
+            this.pressSlot(this.slot1);
+        } else if(phase == pauseTicks * 2) {
+            this.pressSlot(this.slot2);
+        } else if(phase == pauseTicks * 3) {
+            if(this.putBack)
+                if(!hasItem(this.slot1)) {
+                    this.pressSlot(this.slot1);
+                    logDirect("swapped slot back...");
                 }
+            // could still accidently drop an itrem but its your fault when in your inv. When there is a circumstance that has to be treaten differently an option could also be added
 
-                break;
         }
+
         phase++;
+    }
+
+    private boolean hasItem(SlotConverter slot) {
+        return !ChestHelper.hasSlotItem(slot, Item.getItemFromBlock(Blocks.AIR));
     }
 
     protected void pressSlot(SlotConverter slot) {

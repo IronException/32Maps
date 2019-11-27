@@ -33,7 +33,7 @@ public class EditChestShulkerProcess extends ForwardProcess {
 
     protected static SubProcess getSwapInChest(BlockPos chestCoords, SlotConverter chestSlot, SlotConverter hotbarSlot) {
         return new DoInContainerProcess(chestCoords,
-                new SwapSlot(chestSlot, hotbarSlot, new Epsilon()),
+                new SwapSlot(chestSlot, hotbarSlot, false, new Epsilon()),
                 new Epsilon());
     }
 
