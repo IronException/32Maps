@@ -81,8 +81,14 @@ public class AbstractSlot extends SlotConverter {
     public void saveNewSlot(int slot){
         // TODO we assume that every inv is 27 slots big for simplicity. If this whole program would be reused for something else special cases like hoppers also have to be treaded differently by considering ChestHelper.getContainer()
 
-        if(ChestHelper.getContainer() == ContainerType.INVENTORY)
+        ChestSortProcess.INSTANCE.logDirect("got to save slot " + slot);
+
+
+        if(ChestHelper.getContainer() == ContainerType.INVENTORY) {
+
             slot -= 9;// this is so wrong but somehow sometimes minecraft inv is counted and sometimes not? (I think and hope I think so not all code is broken...) <- armorslots + crafting slots + 2nd hand are also in there smh..
+            ChestSortProcess.INSTANCE.logDirect("we are in an inv with subslot " + (slot % 27));
+        }
         super.slot = slot % 27;
         switch (slot / 27){
             case 0:
