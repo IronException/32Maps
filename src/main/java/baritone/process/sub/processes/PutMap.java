@@ -58,7 +58,7 @@ public class PutMap extends OneTimeCommand {
     }
 
     private static int calculateChestSlot(int mapId) {
-        return mapId / 27;
+        return (mapId / 27) % 27;
     }
 
     private static int calculateShulkerSlot(int mapId) {
