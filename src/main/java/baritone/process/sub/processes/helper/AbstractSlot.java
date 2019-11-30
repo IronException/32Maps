@@ -57,8 +57,6 @@ public class AbstractSlot extends SlotConverter {
                 for (int i = startSearch.getSlotIn(in); i < ChestSortProcess.INSTANCE.ctx.player().openContainer.getInventory().size(); i++)
                     if (isTheOne(i)) {
                         saveNewSlot(i);
-                        if(ChestSortProcess.debug)
-                            ChestSortProcess.INSTANCE.logDirect("got slot: " + i + " and converted to " + this.toString());
                         return super.getSlotIn(in);
                     }
                 for (int i = 0; i < startSearch.getSlotIn(in); i++)
