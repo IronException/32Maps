@@ -155,7 +155,7 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     @Override
     public void activate() {
         this.active = true;
-        this.process = getProcessBuild();
+        this.process = new Epsilon(); // so we finish and onTick generates the process
     }
 
 
