@@ -42,9 +42,11 @@ public class PutMap extends OneTimeCommand {
             ChestSortProcess.INSTANCE.logDirect("");
         }
         putMapLocs = putMapLocs.scale(calculateChestCoords(mapId));
-        return new EditChestShulkerProcess(putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z),
+        BlockPos convertedMapCoordBlockPos = putMapCoords.add(putMapLocs.x, putMapLocs.y, putMapLocs.z);
+        BlockPos convertedShulkerPos = convertedMapCoordBlockPos.add(relativeShulkerPos);
+        return new EditChestShulkerProcess(convertedMapCoordBlockPos,
                 new SlotConverter(calculateChestSlot(mapId), ContainerType.NORMAL_CHEST),
-                hotbarSlot, putMapCoords.add(relativeShulkerPos),
+                hotbarSlot, convertedShulkerPos,
                 new SwapSlot(mapSlot, new SlotConverter(calculateShulkerSlot(mapId), ContainerType.NORMAL_CHEST), new Epsilon()),
                 true, nextProcess);
     }
