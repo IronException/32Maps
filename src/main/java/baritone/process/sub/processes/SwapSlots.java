@@ -17,6 +17,7 @@
 
 package baritone.process.sub.processes;
 
+import baritone.process.ChestSortProcess;
 import baritone.process.sub.processes.helper.ContainerType;
 import baritone.process.sub.processes.helper.SlotConverter;
 
@@ -27,8 +28,12 @@ public class SwapSlots extends SubProcess {
   
   protected static MultiProcess getNextProcess() {
     SubProcess[] rV = new SubProcess[27];
-    for(int i = 0; i < rV.length; i ++)
-      rV[i] = new SwapSlot(new SlotConverter(i, ContainerType.NORMAL_CHEST), new SlotConverter(i, ContainerType.INVENTORY), new Epsilon());
+    SubProcess next = new Epsilon();
+    for(int i = 0; i < rV.length; i ++) {
+      if(ChestSortProcess.INSTANCE.debug)
+        next = new ChatProcess("debugging: swapped slot " + i, new Epsilon());
+      rV[i] = new SwapSlot(new SlotConverter(i, ContainerType.NORMAL_CHEST), new SlotConverter(i, ContainerType.INVENTORY), next);
+    }
     return new MultiProcess(rV);
   }
   
