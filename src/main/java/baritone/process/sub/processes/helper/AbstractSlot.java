@@ -42,6 +42,9 @@ public class AbstractSlot extends SlotConverter {
 
 
     protected boolean isTheOne(int i) {
+        if(i < 0) // in case startSearch is in a bigger gui then we are rn
+            return false;
+
         if(ChestHelper.getContainer() == ContainerType.INVENTORY)
             i -= 9; // - 9 because it is an iventory and we add +9 in SlotConverter. And my code is too messed up to make it better then this.
         return ChestHelper.hasSlotItem(new SlotConverter(i, ChestHelper.getContainer()), this.item);
