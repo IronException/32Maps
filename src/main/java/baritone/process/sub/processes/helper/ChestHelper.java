@@ -44,7 +44,9 @@ public class ChestHelper {
         else if (getCurrentContainer() instanceof ContainerPlayer)
             return ContainerType.INVENTORY;
 
-        return null;
+        if(ChestSortProcess.INSTANCE.debug)
+            ChestSortProcess.INSTANCE.logDirect("getContainer: " + getCurrentContainer());
+        return ContainerType.INVENTORY; // inventory is prly wrong as default. But somehow this is the state I was in most time this returned null
     }
 
     public static int itemsInInv(Item item) {
