@@ -663,8 +663,14 @@ public class ExampleBaritoneControl implements Helper, AbstractGameEventListener
             }
             return true;
         }
-        if (msg.equals("sort")) {
-            baritone.getChestSortProcess().activate();
+        if (msg.startsWith("sort")) {
+            int pauseTicks = 20;
+            try{
+                pauseTicks = Integer.parseInt(msg.split(" ")[1]);
+            } catch (Exception e){
+
+            }
+            baritone.getChestSortProcess().activate(pauseTicks);
             logDirect("Enabled sort");
             return true;
         }

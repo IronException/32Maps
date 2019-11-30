@@ -19,7 +19,7 @@ package baritone.api.process;
 
 public interface IChestSortProcess {
 
-    void activate();
+    void activate(int ticks);
 
     boolean isActive();
 }

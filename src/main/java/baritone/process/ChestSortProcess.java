@@ -51,6 +51,8 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
 
     public static BlockPos shulkerPos = Config.shulkerPos;
 
+    public static int pauseTicks;
+
 
     private boolean active = false;
 
@@ -153,9 +155,10 @@ public final class ChestSortProcess extends BaritoneProcessHelper implements ICh
     }
 
     @Override
-    public void activate() {
+    public void activate(int pauseTicks) {
         this.active = true;
         this.process = new Epsilon(); // so we finish and onTick generates the process
+        this.pauseTicks = pauseTicks;
     }
 
 

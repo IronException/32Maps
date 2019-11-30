@@ -33,7 +33,7 @@ public class SwapSlot extends SubProcess {
     protected SlotConverter slot1, slot2;
     protected boolean putBack;
 
-    protected int pauseTicks = 3;
+    protected int pauseTicks;
 
     public SwapSlot(SlotConverter slot1, SlotConverter slot2, SubProcess nextProcess) {
         this(slot1, slot2, true, nextProcess);
@@ -48,6 +48,8 @@ public class SwapSlot extends SubProcess {
         this.slot2 = slot2;
 
         this.putBack = putBack;
+
+        this.pauseTicks = ChestSortProcess.INSTANCE.pauseTicks;
     }
 
     /**
@@ -55,7 +57,7 @@ public class SwapSlot extends SubProcess {
      */
     @Override
     public boolean isFinished() {
-        return this.phase > pauseTicks * 4; // 2 ticks extra just in case
+        return this.phase > pauseTicks * 5; // 2 ticks extra just in case
     }
 
     @Override
