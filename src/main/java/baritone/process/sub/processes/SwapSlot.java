@@ -33,7 +33,7 @@ public class SwapSlot extends SubProcess {
     protected SlotConverter slot1, slot2;
     protected boolean putBack;
 
-    protected int pauseTicks = 5;
+    protected int pauseTicks = 3;
 
     public SwapSlot(SlotConverter slot1, SlotConverter slot2, SubProcess nextProcess) {
         this(slot1, slot2, true, nextProcess);
@@ -73,13 +73,13 @@ public class SwapSlot extends SubProcess {
         } else if(phase == pauseTicks * 2) {
             this.pressSlot(this.slot2);
         } else if(phase == pauseTicks * 3) {
-            if(this.putBack)
-                if(!hasItem(this.slot1)) {
-                    this.pressSlot(this.slot1);
-                    logDirect("swapped slot back...");
-                }
-            // could still accidently drop an itrem but its your fault when in your inv. When there is a circumstance that has to be treaten differently an option could also be added
-
+            if(this.putBack) {
+                this.pressSlot(this.slot1);
+            } else if(ChestSortProcess.INSTANCE.debug) {
+                logDirect("didnt put back. as wished");
+            }
+            // when having hasItem(this.slot1) is within the code it could still accidently drop an itrem but its your fault when in your inv. When there is a circumstance that has to be treaten differently an option could also be added
+            // but I have introduced a seperate variable that might make it easier...
         }
 
         phase++;

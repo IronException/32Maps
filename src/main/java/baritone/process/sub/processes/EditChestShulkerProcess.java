@@ -31,17 +31,17 @@ import net.minecraft.util.math.BlockPos;
 
 public class EditChestShulkerProcess extends ForwardProcess {
 
-    protected static SubProcess getSwapInChest(BlockPos chestCoords, SlotConverter chestSlot, SlotConverter hotbarSlot) {
+    protected static SubProcess getSwapInChest(BlockPos chestCoords, SlotConverter chestSlot, SlotConverter hotbarSlot, boolean putBack) {
         return new DoInContainerProcess(chestCoords,
-                new SwapSlot(chestSlot, hotbarSlot, false, new Epsilon()),
+                new SwapSlot(chestSlot, hotbarSlot, putBack, new Epsilon()),
                 new Epsilon());
     }
 
     protected static SubProcess getProcess(BlockPos chestCoords, SlotConverter chestSlot, SlotConverter hotbarSlot, BlockPos placeShulker, SubProcess doInShulker, boolean putBack, SubProcess nextProcess) {
         SubProcess[] rV = new SubProcess[]{
-                getSwapInChest(chestCoords, chestSlot, hotbarSlot),
+                getSwapInChest(chestCoords, chestSlot, hotbarSlot, putBack), // TODO is the last putBack right here? (it is for not picking up an additional shulker if there is a flow into the chest)
                 new EditShulkerProcess(placeShulker, hotbarSlot, doInShulker, putBack, new Epsilon()),
-                getSwapInChest(chestCoords, chestSlot, new AbstractSlot(Item.getItemFromBlock(Blocks.PURPLE_SHULKER_BOX), new SlotConverter(0, ContainerType.HOTBAR), true)), // item could have also went somewhere else in inventory
+                getSwapInChest(chestCoords, chestSlot, new AbstractSlot(Item.getItemFromBlock(Blocks.PURPLE_SHULKER_BOX), new SlotConverter(0, ContainerType.HOTBAR), true), true), // item could have also went somewhere else in inventory
                 nextProcess
         };
         if(!putBack)
