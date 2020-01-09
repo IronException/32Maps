@@ -99,4 +99,9 @@ public class SwapSlot extends SubProcess {
         super.ctx.playerController().windowClick(super.ctx.player().openContainer.windowId, slot, 0, ClickType.PICKUP, super.ctx.player());
     }
 
+    private void swapWithHotBar(final int inInventory, final int inHotbar) {
+        ctx.playerController().windowClick(ctx.player().inventoryContainer.windowId, inInventory < 9 ? inInventory + 36 : inInventory, inHotbar, ClickType.SWAP, ctx.player());
+    }
+
+
 }
